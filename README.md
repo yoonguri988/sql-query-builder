@@ -1,36 +1,141 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SQL Query Builder
 
-## Getting Started
+> React 프론트엔드 개발자 포트폴리오 프로젝트
 
-First, run the development server:
+Visual SQL Query Builder built with Next.js 15.1, TypeScript 5.7, and SQL.js
+
+## 🚀 주요 기능
+
+- **비주얼 쿼리 빌더**: GUI로 SQL 쿼리 생성
+- **실시간 SQL 프리뷰**: 생성된 SQL 코드 실시간 확인
+- **브라우저 내 DB**: SQL.js로 클라이언트 사이드 데이터베이스
+- **데이터 시각화**: Recharts로 쿼리 결과 차트 생성
+- **쿼리 히스토리**: 과거 실행 쿼리 관리
+
+## 🛠 기술 스택
+
+### 핵심 프레임워크
+
+- **React** 19.0.0
+- **Next.js** 15.1.0 (App Router)
+- **TypeScript** 5.7.0
+
+### 상태 관리
+
+- **Zustand** 5.0.0
+
+### UI 라이브러리
+
+- **Tailwind CSS** 4.0.0
+- **shadcn/ui** (latest)
+- **Radix UI** (Primitives)
+
+### 데이터 처리
+
+- **SQL.js** 1.12.0 (브라우저 내 SQLite)
+- **TanStack Table** 8.20.0
+- **date-fns** 4.1.0
+
+### 데이터 시각화
+
+- **Recharts** 2.15.0
+
+### 폼 & 검증
+
+- **React Hook Form** 7.54.0
+- **Zod** 3.23.8
+
+## 📦 설치 및 실행
+
+### 1. 저장소 클론 또는 파일 압축 해제
+
+```bash
+cd sql-query-builder
+```
+
+### 2. 의존성 설치
+
+```bash
+npm install
+```
+
+### 3. SQL.js WebAssembly 파일 복사
+
+```bash
+# node_modules에서 public 폴더로 복사
+cp node_modules/sql.js/dist/sql-wasm.wasm public/
+```
+
+### 4. 개발 서버 실행
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+브라우저에서 [http://localhost:3000](http://localhost:3000) 접속
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📚 프로젝트 구조
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+sql-query-builder/
+├── src/
+│   ├── app/                    # Next.js App Router
+│   ├── components/
+│   │   ├── ui/                 # shadcn/ui 컴포넌트
+│   │   ├── layout/             # 레이아웃 컴포넌트
+│   │   ├── query-builder/      # 쿼리 빌더 UI
+│   │   ├── results/            # 결과 테이블
+│   │   └── visualization/      # 차트
+│   ├── lib/
+│   │   ├── db/                 # DB 초기화 & 스키마
+│   │   └── query/              # SQL 쿼리 생성 로직
+│   ├── store/                  # Zustand 스토어
+│   └── types/                  # TypeScript 타입 정의
+└── public/
+    └── sql-wasm.wasm           # SQL.js WebAssembly
+```
 
-## Learn More
+## 🗄️ 데이터베이스 스키마
 
-To learn more about Next.js, take a look at the following resources:
+E-commerce 샘플 데이터베이스:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **users** (20 레코드)
+- **categories** (6 레코드, 계층 구조)
+- **products** (100 레코드)
+- **orders** (150 레코드)
+- **order_items** (300+ 레코드)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 사용 가능한 스크립트
 
-## Deploy on Vercel
+```bash
+# 개발 서버
+npm run dev
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# 프로덕션 빌드
+npm run build
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# 프로덕션 서버
+npm start
+
+# ESLint 검사
+npm run lint
+
+# ESLint 자동 수정
+npm run lint:fix
+
+# Prettier 포맷팅
+npm run format
+
+# Prettier 검사
+npm run format:check
+```
+
+## 🎯 개발 일정 (1주차)
+
+- **1일차**: Next.js + TypeScript 초기화, Tailwind 설정
+- **2일차**: 폴더 구조 확정, Git 초기화, ESLint/Prettier
+- **3일차**: 메인 레이아웃 (Header, Sidebar, Main, RightPanel)
+- **4일차**: SQL.js 설치 및 DB 스키마 작성
+- **5일차**: 샘플 데이터 생성 (100~200개 레코드)
+- **6일차**: Zustand 스토어 설계
+- **7일차**: DB 스키마 트리뷰 UI (Accordion)
