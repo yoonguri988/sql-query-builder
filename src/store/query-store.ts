@@ -58,6 +58,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   toggleColumn: (column) => {
     set((state) => {
       const exists = state.selectedColumns.includes(column);
+      console.log("⭐ 선택된 컬럼들:", state.selectedColumns);
       return {
         selectedColumns: exists
           ? state.selectedColumns.filter((c) => c !== column)
@@ -77,6 +78,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
 
   // FROM
   setTable: (table) => {
+    console.log("⭐ 테이블 호출:", table);
     set({ selectedTable: table, selectedColumns: [], selectAll: false });
   },
 
