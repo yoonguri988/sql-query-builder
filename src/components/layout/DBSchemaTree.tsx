@@ -11,10 +11,10 @@ import { Database, Table, Columns } from "lucide-react";
 
 export default function DBSchemaTree() {
   const { tables } = useDBStore();
-  const { setTable, toggleColumn, selectedColumns } = useQueryStore();
+  const { setSelectedTable, toggleColumn, selectedColumns } = useQueryStore();
 
   const handleTableClick = (tblNm: string) => {
-    setTable(tblNm);
+    setSelectedTable(tblNm);
   };
 
   const handleColumnDoubleClick = (colNm: string) => {
@@ -60,8 +60,8 @@ export default function DBSchemaTree() {
                         <div className="font-mono text-xs">{column.name}</div>
                         <div className="text-xs text-muted-foreground">
                           {column.type}
-                          {column.constraints.length > 0 &&
-                            ` • ${column.constraints.join(", ")}`}
+                          {/* {column.constraints.length > 0 && */}
+                          {/* ` • ${column.constraints.join(", ")}`} */}
                         </div>
                       </div>
                     </div>
