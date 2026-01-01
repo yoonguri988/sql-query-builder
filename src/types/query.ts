@@ -1,27 +1,46 @@
-// WHERE 조건 타입
+/**
+ * SQL 쿼리 타입 정의
+ */
+// WHERE 조건 연산자
+export type WhereOperator =
+  | "="
+  | "!="
+  | ">"
+  | ">="
+  | "<"
+  | "<="
+  | "LIKE"
+  | "IN"
+  | "IS NULL"
+  | "IS NOT NULL";
+
+// WHERE 조건 로직 연산자
+export type LogicalOperator = "AND" | "OR";
+
+// WHERE 조건
 export interface WhereCondition {
-  id: string; // 고유 ID
+  id?: string; // 고유 ID
   column: string;
-  operator: "=" | "!=" | ">" | "<" | ">=" | "<=" | "LIKE" | "IN";
+  operator: WhereOperator;
   value: string | number;
-  conjunction: "AND" | "OR";
+  logicalOperator?: LogicalOperator;
 }
 
-// ORDER BY 타입
+// ORDER BY 정렬
 export interface OrderByClause {
   id: string;
   column: string;
   direction: "ASC" | "DESC";
 }
 
-// Query Builder 상태
+// Query 상태
 export interface QueryState {
+  // FROM
+  selectedTable: string | undefined;
+
   // SELECT
   selectedColumns: string[];
-  selectAll: boolean;
-
-  // FROM
-  selectedTable: string | null;
+  // selectAll: boolean;
 
   // WHERE
   whereConditions: WhereCondition[];
@@ -35,8 +54,14 @@ export interface QueryState {
   // 생성된 SQL
   generatedSQL: string;
 
-  // 쿼리 결과
-  queryResult: QueryResult | null;
+  // 쿼리 결과: any[] | null;
+  /* ?? any 대신 구체적인 타입을 정의 하도록 노력 */
+  // queryResults: any[] | null;
+  queryResults: QueryResult[] | null;
+
+  // 실행 메타 데이터
+  executionTime: number | null;
+  error: string | null;
 }
 
 /** 251230 any 대신 구체적인 타입을 정의 */
