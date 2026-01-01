@@ -3,128 +3,150 @@ import {
   QueryState,
   WhereCondition,
   OrderByClause,
-  QueryResult,
+  QueryHistoryItem,
 } from "@/types/query";
 
 interface QueryStore extends QueryState {
+  // FROM 액션
+  setSelectedTable: (table: string) => void;
+
   // SELECT 액션
   toggleColumn: (column: string) => void;
-  toggleSelectAll: () => void;
-  clearColumns: () => void;
-
-  // FROM 액션
-  setTable: (table: string) => void;
+  setSelectedColumns: (columns: string[]) => void;
+  selectAllColumns: (columns: string[]) => void;
+  deselectAllColumns: () => void;
 
   // WHERE 액션
-  addWhereCondition: (condition: Omit<WhereCondition, "id">) => void;
+  addWhereCondition: (condition: WhereCondition) => void;
   updateWhereCondition: (id: string, updates: Partial<WhereCondition>) => void;
   removeWhereCondition: (id: string) => void;
-  clearWhereConditions: () => void;
 
   // ORDER BY 액션
-  addOrderBy: (clause: Omit<OrderByClause, "id">) => void;
+  addOrderBy: (orderBy: OrderByClause) => void;
+  updateOrderBy: (id: string, updates: Partial<OrderByClause>) => void;
   removeOrderBy: (id: string) => void;
-  clearOrderBy: () => void;
 
   // LIMIT 액션
   setLimit: (limit: number) => void;
 
   // SQL 생성
-  generateSQL: () => string;
+  generateSQL: () => void;
 
-  // 쿼리 실행 결과
-  queryResult: QueryResult | null;
-  setQueryResult: (result: QueryResult) => void;
+  // 쿼리 실행
+  executeQuery: () => Promise<void>;
 
   // 리셋
   reset: () => void;
+
+  // 쿼리 히스토리
+  queryHistory: QueryHistoryItem[];
+  addToHistory: (item: QueryHistoryItem) => void;
+  clearHistory: () => void;
 }
 
 const initialState: QueryState = {
+  selectedTable: "",
   selectedColumns: [],
-  selectAll: false,
-  selectedTable: null,
   whereConditions: [],
   orderBy: [],
   limit: 100,
   generatedSQL: "",
-  queryResult: null,
+  queryResults: null,
+  executionTime: null,
+  error: null,
 };
 
 export const useQueryStore = create<QueryStore>((set, get) => ({
   ...initialState,
+  queryHistory: [],
+  // FROM 절
+  setSelectedTable: (table) => {
+    set({
+      selectedTable: table,
+      selectedColumns: [], // 테이블 변경시 컬럼 선택 초기화
+      whereConditions: [], // 테이블 변경시 WHERE 선택 초기화
+      orderBy: [], // 테이블 변경시 ORDER BY 선택 초기화
+    });
+    get().generateSQL();
+  },
 
-  // SELECT
+  // SELECT 절
   toggleColumn: (column) => {
     set((state) => {
-      const exists = state.selectedColumns.includes(column);
+      const isSelected = state.selectedColumns.includes(column);
       console.log("⭐ 선택된 컬럼들:", state.selectedColumns);
       return {
-        selectedColumns: exists
+        selectedColumns: isSelected
           ? state.selectedColumns.filter((c) => c !== column)
           : [...state.selectedColumns, column],
-        selectAll: false,
       };
     });
+    get().generateSQL();
   },
 
-  toggleSelectAll: () => {
-    set((state) => ({ selectAll: !state.selectAll, selectedColumns: [] }));
+  setSelectedColumns: (columns) => {
+    set({ selectedColumns: columns });
+    get().generateSQL();
   },
 
-  clearColumns: () => {
-    set({ selectedColumns: [], selectAll: false });
+  selectAllColumns: (columns) => {
+    set({ selectedColumns: columns });
+    get().generateSQL();
   },
 
-  // FROM
-  setTable: (table) => {
-    console.log("⭐ 테이블 호출:", table);
-    set({ selectedTable: table, selectedColumns: [], selectAll: false });
+  deselectAllColumns: () => {
+    set({ selectedColumns: [] });
+    get().generateSQL();
   },
 
-  // WHERE
+  // WHERE 절
   addWhereCondition: (condition) => {
     set((state) => ({
-      whereConditions: [
-        ...state.whereConditions,
-        { ...condition, id: crypto.randomUUID() },
-      ],
+      whereConditions: [...state.whereConditions, condition],
     }));
+    get().generateSQL();
   },
 
   updateWhereCondition: (id, updates) => {
     set((state) => ({
-      whereConditions: state.whereConditions.map((c) =>
-        c.id === id ? { ...c, ...updates } : c
+      whereConditions: state.whereConditions.map((condition) =>
+        condition.id === id ? { ...condition, ...updates } : condition
       ),
     }));
+    get().generateSQL();
   },
 
   removeWhereCondition: (id) => {
     set((state) => ({
-      whereConditions: state.whereConditions.filter((c) => c.id !== id),
+      whereConditions: state.whereConditions.filter(
+        (condition) => condition.id !== id
+      ),
     }));
+    get().generateSQL();
   },
 
-  clearWhereConditions: () => {
-    set({ whereConditions: [] });
-  },
-
-  // ORDER BY
-  addOrderBy: (clause) => {
+  // ORDER BY 절
+  addOrderBy: (orderBy) => {
     set((state) => ({
-      orderBy: [...state.orderBy, { ...clause, id: crypto.randomUUID() }],
+      orderBy: [...state.orderBy, orderBy],
     }));
+    get().generateSQL();
+  },
+
+  updateOrderBy: (id, updates) => {
+    set((state) => ({
+      orderBy: state.orderBy.map((order) =>
+        order.id === id ? { ...order, ...updates } : order
+      ),
+    }));
+    get().generateSQL();
   },
 
   removeOrderBy: (id) => {
     set((state) => ({
-      orderBy: state.orderBy.filter((o) => o.id !== id),
+      orderBy: state.orderBy.filter((order) => order.id !== id),
     }));
-  },
-
-  clearOrderBy: () => {
-    set({ orderBy: [] });
+    get().generateSQL();
   },
 
   // LIMIT
@@ -135,78 +157,118 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   // SQL 생성
   generateSQL: () => {
     const state = get();
-    const {
-      selectedTable,
-      selectedColumns,
-      selectAll,
-      whereConditions,
-      orderBy,
-      limit,
-    } = state;
 
-    if (!selectedTable) {
-      return "";
+    if (!state.selectedTable) {
+      set({ generatedSQL: "" });
+      return;
     }
 
     let sql = "SELECT ";
 
     // SELECT 절
-    if (selectAll || selectedColumns.length === 0) {
+    if (state.selectedColumns.length === 0) {
       sql += "*";
     } else {
-      sql += selectedColumns.join(", ");
+      sql += state.selectedColumns.join(", ");
     }
 
     // FROM 절
-    sql += ` FROM ${selectedTable}`;
+    sql += ` FROM ${state.selectedTable}`;
 
     // WHERE 절
-    if (whereConditions.length > 0) {
+    if (state.whereConditions.length > 0) {
       sql += " WHERE ";
-      sql += whereConditions
-        .map((cond, index) => {
-          let clause = "";
-          if (index > 0) {
-            clause += ` ${cond.conjunction} `;
-          }
+      state.whereConditions.forEach((condition, index) => {
+        if (index > 0 && condition.logicalOperator) {
+          sql += ` ${condition.logicalOperator} `;
+        }
 
-          let value = cond.value;
-          if (cond.operator === "LIKE") {
-            value = `'%${value}%'`;
-          } else if (typeof value === "string") {
-            value = `'${value}'`;
-          }
-
-          clause += `${cond.column} ${cond.operator} ${value}`;
-          return clause;
-        })
-        .join("");
+        if (
+          condition.operator === "IS NULL" ||
+          condition.operator === "IS NOT NULL"
+        ) {
+          sql += `${condition.column} ${condition.operator}`;
+        } else if (condition.operator === "LIKE") {
+          sql += `${condition.column} LIKE '%${condition.value}%'`;
+        } else if (condition.operator === "IN") {
+          sql += `${condition.column} IN (${condition.value})`;
+        } else {
+          // 숫자 타입은 따옴표 없이, 텍스트는 따옴표 포함
+          const needsQuotes = isNaN(Number(condition.value));
+          sql += `${condition.column} ${condition.operator} ${needsQuotes ? `'${condition.value}'` : condition.value}`;
+        }
+      });
     }
 
     // ORDER BY 절
-    if (orderBy.length > 0) {
+    if (state.orderBy.length > 0) {
       sql += " ORDER BY ";
-      sql += orderBy.map((o) => `${o.column} ${o.direction}`).join(", ");
+      sql += state.orderBy
+        .map((order) => `${order.column} ${order.direction}`)
+        .join(", ");
     }
 
     // LIMIT 절
-    if (limit > 0) {
-      sql += ` LIMIT ${limit}`;
+    if (state.limit > 0) {
+      sql += ` LIMIT ${state.limit}`;
     }
 
-    sql += ";";
-
     set({ generatedSQL: sql });
-    return sql;
   },
 
-  // 쿼리 결과
-  setQueryResult: (result) => {
-    set({ queryResult: result });
-  },
+  // 쿼리 실행 (SQL.js 통합 예정)
+  executeQuery: async () => {
+    const state = get();
 
+    if (!state.generatedSQL) {
+      set({ error: "SQL 쿼리가 생성되지 않았습니다." });
+      return;
+    }
+
+    try {
+      const startTime = performance.now();
+
+      const endTime = performance.now();
+      const executionTime = Math.round(endTime - startTime);
+
+      set({
+        queryResults: [],
+        executionTime,
+        error: null,
+      });
+
+      // 히스토리에 추가
+      get().addToHistory({
+        id: Date.now().toString(),
+        sql: state.generatedSQL,
+        timestamp: new Date(),
+        executionTime,
+        rowCount: 0,
+      });
+    } catch (error) {
+      set({
+        error:
+          error instanceof Error
+            ? error.message
+            : "쿼리 실행 중 오류가 발생했습니다.",
+        queryResults: null,
+        executionTime: null,
+      });
+    }
+  },
   // 리셋
   reset: () => {
     set(initialState);
+  },
+
+  // 쿼리 히스토리
+  addToHistory: (item) => {
+    set((state) => ({
+      queryHistory: [item, ...state.queryHistory].slice(0, 20), // 최대 20개
+    }));
+  },
+
+  clearHistory: () => {
+    set({ queryHistory: [] });
   },
 }));

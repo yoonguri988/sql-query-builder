@@ -8,11 +8,10 @@ import { useHistoryStore } from "@/store/history-store";
 
 export default function TestStorePage() {
   const {
-    setTable,
+    setSelectedTable,
     toggleColumn,
     addWhereCondition,
     setLimit,
-    generateSQL,
     generatedSQL,
   } = useQueryStore();
 
@@ -24,7 +23,7 @@ export default function TestStorePage() {
   }, [initialize]);
 
   const handleTestQuery = () => {
-    setTable("users");
+    setSelectedTable("users");
     toggleColumn("id");
     toggleColumn("name");
     toggleColumn("email");
@@ -32,16 +31,13 @@ export default function TestStorePage() {
       column: "country",
       operator: "=",
       value: "USA",
-      conjunction: "AND",
+      logicalOperator: "AND",
     });
     setLimit(10);
 
-    const sql = generateSQL();
-    console.log("Generated SQL:", sql);
-
     // 히스토리에 추가
     addToHistory({
-      sql,
+      sql: generatedSQL,
       timestamp: new Date(),
       executionTime: 12,
       rowCount: 10,

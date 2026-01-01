@@ -2,6 +2,7 @@
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MainContentProps } from "@/types/layout";
+import QueryBuilder from "@/components/query-builder/QueryBuilder";
 
 export default function MainContent({ isRightPanelOpen }: MainContentProps) {
   return (
@@ -11,7 +12,6 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
         ${isRightPanelOpen ? "hidden md:block" : "block"}
       `}
     >
-      {" "}
       <Tabs defaultValue="builder" className="flex-1 flex flex-col">
         <TabsList className="w-full justify-start border-b rounded-none h-12 bg-transparent p-0">
           <TabsTrigger
@@ -48,6 +48,7 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
               {/* Query Builder 폼 내용 */}
               <div className="text-muted-foreground">
                 Query Builder 컴포넌트가 여기에 렌더링됩니다.
+                <QueryBuilder />
               </div>
             </div>
           </TabsContent>
