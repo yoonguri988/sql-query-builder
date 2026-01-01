@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { Database, QueryExecResult } from "sql.js";
-import { TableSchema, TABLES } from "@/types/database";
+import { TableSchema } from "@/types/database";
 import { initDatabase } from "@/lib/db/init-db";
+import { DATABASE_SCHEMA } from "@/types/schema";
 
 interface DBStore {
   // 데이터베이스 인스턴스
@@ -25,7 +26,7 @@ export const useDBStore = create<DBStore>((set, get) => ({
   isInitialized: false,
   isLoading: false,
   error: null,
-  tables: TABLES,
+  tables: DATABASE_SCHEMA,
   selectedTable: null,
 
   initialize: async () => {
