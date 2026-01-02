@@ -19,7 +19,7 @@ export type LogicalOperator = "AND" | "OR";
 
 // WHERE 조건
 export interface WhereCondition {
-  id?: string; // 고유 ID
+  id: string; // 고유 ID
   column: string;
   operator: WhereOperator;
   value: string | number;
