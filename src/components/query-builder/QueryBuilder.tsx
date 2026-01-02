@@ -11,18 +11,21 @@ import {
 import { Code2 } from "lucide-react";
 import TableSelector from "@/components/query-builder/TableSelector";
 import ColumnSelector from "@/components/query-builder/ColumnSelector";
+import WhereClauseBuilder from "@/components/query-builder/WhereClauseBuilder";
 
 /** Query Builder 메인 컴포넌트
  *
  * 기능
  * - [260101] FROM 절: 테이블 선택 드롭 다운
  * - [260101] SELECT 절: 컬럼 선택 Multi-Checkbox
+ * - [260102] WHERE 절: 조건 빌더
  * - 선택된 테이블의 컬럼 정보 자동 로드 및 표시
  * - 생선된 SQL 실시간 미리보기
  * @returns
  */
 export default function QueryBuilder() {
-  const { selectedTable, selectedColumns, generatedSQL } = useQueryStore();
+  const { selectedTable, selectedColumns, whereConditions, generatedSQL } =
+    useQueryStore();
 
   return (
     <div className="space-y-6">
@@ -46,6 +49,14 @@ export default function QueryBuilder() {
             <div className="space-y-2">
               <h3 className="text-lg font-semibold">2. 컬럼 선택 (SELECT)</h3>
               <ColumnSelector />
+            </div>
+          )}
+
+          {/* 3. WHERE 절 - WhereClauseBuilder */}
+          {selectedTable && (
+            <div className="space-y-2">
+              <h3 className="text-lg font-semibold">3. 조건 설정 (WHERE)</h3>
+              <WhereClauseBuilder />
             </div>
           )}
 
@@ -74,6 +85,9 @@ export default function QueryBuilder() {
                     </span>
                     컬럼만 조회됩니다.
                   </p>
+                )}
+                {whereConditions.length > 0 && (
+                  <p>• WHERE 조건 {whereConditions.length}개가 적용됩니다.</p>
                 )}
               </div>
             </div>
