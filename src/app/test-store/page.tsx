@@ -28,6 +28,7 @@ export default function TestStorePage() {
     toggleColumn("name");
     toggleColumn("email");
     addWhereCondition({
+      id: `condition-${Date.now()}`,
       column: "country",
       operator: "=",
       value: "USA",
