@@ -152,6 +152,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   // LIMIT
   setLimit: (limit) => {
     set({ limit });
+    get().generateSQL();
   },
 
   // SQL 생성
