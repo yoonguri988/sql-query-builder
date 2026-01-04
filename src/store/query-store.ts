@@ -75,7 +75,6 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   toggleColumn: (column) => {
     set((state) => {
       const isSelected = state.selectedColumns.includes(column);
-      console.log("⭐ 선택된 컬럼들:", state.selectedColumns);
       return {
         selectedColumns: isSelected
           ? state.selectedColumns.filter((c) => c !== column)

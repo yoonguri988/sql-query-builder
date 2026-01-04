@@ -45,7 +45,6 @@ export function closeDatabase(): void {
   if (db) {
     db.close();
     db = null;
-    console.log("Database closed");
   }
 }
 
@@ -57,8 +56,6 @@ export function executeQuery(sql: string): QueryResult {
     throw new Error("데이터베이스가 초기화되지 않았습니다.");
   }
 
-  console.log("[Database] Executing query:", sql);
-
   try {
     const result = db.exec(sql);
 
@@ -67,11 +64,9 @@ export function executeQuery(sql: string): QueryResult {
     }
 
     const { columns, values } = result[0];
-    console.log("[Database] Query executed successfully. Rows:", values.length);
 
     return { columns, values: values as SqlValue[][], rowCount: values.length };
   } catch (error) {
-    console.error("[Database] Query execution failed:", error);
     throw error;
   }
 }
