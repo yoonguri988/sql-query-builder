@@ -1,7 +1,6 @@
 "use client";
 
 import { useQueryStore } from "@/store/query-store";
-import { useColumnNames } from "@/hooks/useTableColumns";
 import { ConditionRow } from "./ConditionRow";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -36,8 +35,6 @@ export default function WhereClauseBuilder() {
     removeWhereCondition,
   } = useQueryStore();
 
-  const columnNames = useColumnNames();
-
   // 테이블이 선택되지 않았을 때
   if (!selectedTable) {
     return (
@@ -57,7 +54,7 @@ export default function WhereClauseBuilder() {
   const handleAddCondition = () => {
     const newCondition: WhereCondition = {
       id: `condition-${Date.now()}`,
-      column: columnNames[0] || "", // 첫 번째 컬럼 기본 선택
+      column: "", // 사용자가 직접 선택
       operator: "=",
       value: "",
       logicalOperator: whereConditions.length > 0 ? "AND" : undefined,
@@ -137,7 +134,7 @@ export default function WhereClauseBuilder() {
           {whereConditions.map((condition, index) => (
             <div
               key={condition.id}
-              className="animate-in slide-in-from-top-2 duration-200"
+              className="animate-slide-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <ConditionRow

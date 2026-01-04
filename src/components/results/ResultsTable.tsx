@@ -144,7 +144,7 @@ export default function ResultsTable() {
         <div className="rounded-md border">
           <div className="max-h-[500px] overflow-auto">
             <Table>
-              <TableHeader className="sticky top-0 bg-background z-10">
+              <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
                 <TableRow>
                   {columns.map((column, index) => (
                     <TableHead key={index} className="font-mono font-semibold">
