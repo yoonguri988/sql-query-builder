@@ -57,7 +57,7 @@ export default function WhereClauseBuilder() {
   const handleAddCondition = () => {
     const newCondition: WhereCondition = {
       id: `condition-${Date.now()}`,
-      column: columnNames[0] || "", // 첫 번째 컬럼 기본 선택
+      column: "", // 사용자가 직접 선택
       operator: "=",
       value: "",
       logicalOperator: whereConditions.length > 0 ? "AND" : undefined,
@@ -137,7 +137,7 @@ export default function WhereClauseBuilder() {
           {whereConditions.map((condition, index) => (
             <div
               key={condition.id}
-              className="animate-in slide-in-from-top-2 duration-200"
+              className="animate-slide-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <ConditionRow
