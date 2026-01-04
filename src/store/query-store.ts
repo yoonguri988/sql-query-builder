@@ -5,6 +5,7 @@ import {
   OrderByClause,
   QueryHistoryItem,
 } from "@/types/query";
+import { executeQuery as dbExecuteQuery } from "@/lib/db/init-db";
 
 interface QueryStore extends QueryState {
   // FROM 액션
@@ -51,7 +52,7 @@ const initialState: QueryState = {
   orderBy: [],
   limit: 100,
   generatedSQL: "",
-  queryResults: null,
+  queryResult: null,
   executionTime: null,
   error: null,
 };
@@ -229,11 +230,14 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
     try {
       const startTime = performance.now();
 
+      // SQL.js 데이터베이스에서 쿼리 실행
+      const result = dbExecuteQuery(state.generatedSQL);
+
       const endTime = performance.now();
       const executionTime = Math.round(endTime - startTime);
 
       set({
-        queryResults: [],
+        queryResult: result,
         executionTime,
         error: null,
       });
@@ -252,7 +256,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
           error instanceof Error
             ? error.message
             : "쿼리 실행 중 오류가 발생했습니다.",
-        queryResults: null,
+        queryResult: null,
         executionTime: null,
       });
     }

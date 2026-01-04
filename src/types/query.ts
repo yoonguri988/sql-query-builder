@@ -56,8 +56,8 @@ export interface QueryState {
 
   // 쿼리 결과: any[] | null;
   /* ?? any 대신 구체적인 타입을 정의 하도록 노력 */
-  // queryResults: any[] | null;
-  queryResults: QueryResult[] | null;
+  // queryResult: any[] | null;
+  queryResult: QueryResult | null;
 
   // 실행 메타 데이터
   executionTime: number | null;
@@ -72,7 +72,6 @@ export interface QueryResult {
   columns: string[];
   values: SqlValue[][]; //
   rowCount: number;
-  executionTime: number; // ms
 }
 
 // Query History Item
