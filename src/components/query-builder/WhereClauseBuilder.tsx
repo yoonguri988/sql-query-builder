@@ -1,7 +1,6 @@
 "use client";
 
 import { useQueryStore } from "@/store/query-store";
-import { useColumnNames } from "@/hooks/useTableColumns";
 import { ConditionRow } from "./ConditionRow";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -35,8 +34,6 @@ export default function WhereClauseBuilder() {
     updateWhereCondition,
     removeWhereCondition,
   } = useQueryStore();
-
-  const columnNames = useColumnNames();
 
   // 테이블이 선택되지 않았을 때
   if (!selectedTable) {
