@@ -6,6 +6,8 @@ import {
   QueryHistoryItem,
 } from "@/types/query";
 import { executeQuery as dbExecuteQuery } from "@/lib/db/init-db";
+import validateQueryState from "@/lib/query/validateQueryState";
+import { escapeSQLString } from "@/lib/utils";
 
 interface QueryStore extends QueryState {
   // FROM 액션
@@ -159,6 +161,19 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   generateSQL: () => {
     const state = get();
 
+    /** 검증 로직 */
+    const validation = validateQueryState(state);
+    if (!validation.isValid) {
+      set({
+        generatedSQL: "",
+        error: validation.errors[0]?.message || "쿼리 검증에 실패했습니다.",
+      });
+      return;
+    }
+    /** 검증 성공 시 에러 초기화 */
+    set({ error: null });
+
+    // 테이블 체크
     if (!state.selectedTable) {
       set({ generatedSQL: "" });
       return;
@@ -190,13 +205,19 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         ) {
           sql += `${condition.column} ${condition.operator}`;
         } else if (condition.operator === "LIKE") {
-          sql += `${condition.column} LIKE '%${condition.value}%'`;
+          const escapedValue = escapeSQLString(condition.value);
+          sql += `${condition.column} LIKE '%${escapedValue}%'`;
         } else if (condition.operator === "IN") {
           sql += `${condition.column} IN (${condition.value})`;
         } else {
           // 숫자 타입은 따옴표 없이, 텍스트는 따옴표 포함
           const needsQuotes = isNaN(Number(condition.value));
-          sql += `${condition.column} ${condition.operator} ${needsQuotes ? `'${condition.value}'` : condition.value}`;
+          if (needsQuotes) {
+            const escapedValue = escapeSQLString(condition.value);
+            sql += `${condition.column} ${condition.operator} '${escapedValue}'`;
+          } else {
+            sql += `${condition.column} ${condition.operator} ${condition.value}`;
+          }
         }
       });
     }
