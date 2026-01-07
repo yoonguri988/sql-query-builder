@@ -64,6 +64,7 @@ export default function MainLayout() {
         <MainContent isRightPanelOpen={showRightPanel} />
         <RightPanel
           isOpen={showRightPanel}
+          isDark={isDark}
           onClose={() => setShowRightPanel(false)}
         />
       </div>
