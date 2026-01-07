@@ -3,8 +3,19 @@
 import { X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
 import { Button } from "../ui/button";
+import { SQLPreview } from "../sql-preview/SQLPreview";
 
-export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
+/**
+ * 오른쪽 패널 컴포넌트
+ * - SQL 프리뷰 탭
+ * - 실행 정보 탭
+ */
+
+export default function RightPanel({
+  isOpen,
+  isDark,
+  onClose,
+}: RightPanelProps) {
   return (
     <aside
       className={`
@@ -13,7 +24,7 @@ export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
         lg:block
         fixed lg:static inset-y-0 right-0 z-40
         w-full md:w-96 lg:w-[500px]
-        bg-muted/30 border-l
+        bg-muted/90 border-l
         overflow-y-auto
         flex flex-col
       `}
@@ -35,43 +46,27 @@ export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
             <span className="hidden lg:inline">SQL Preview</span>
             <span className="lg:hidden">SQL</span>
           </h3>
-          <div className="bg-background border rounded-lg p-3 font-mono text-sm overflow-x-auto">
-            <pre className="text-xs md:text-sm">
-              SELECT id, name, email{"\n"}
-              FROM users{"\n"}
-              WHERE created_at &gt; {"'"}2023-01-01{"'"}
-              {"\n"}
-              ORDER BY created_at DESC{"\n"}
-              LIMIT 100
-            </pre>
-          </div>
+          <SQLPreview isDark={isDark} />
         </div>
 
-        {/* 실행 정보 섹션 */}
+        {/* 실행 정보 섹션*/}
         <div>
           <h3 className="font-semibold mb-2">ℹ️ Execution Info</h3>
           <div className="bg-background border rounded-lg p-3 space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-muted-foreground">Rows:</span>
-              <span className="font-semibold">45</span>
+              <span className="font-semibold">-</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Execution Time:</span>
-              <span className="font-semibold">12ms</span>
+              <span className="font-semibold">-</span>
             </div>
             <div className="flex justify-between">
               <span className="text-muted-foreground">Status:</span>
-              <span className="font-semibold text-green-600">Success</span>
+              <span className="font-semibold text-muted-foreground">Ready</span>
             </div>
-          </div>
-        </div>
-
-        {/* 에러 메시지 섹션 (조건부) */}
-        <div className="hidden">
-          <h3 className="font-semibold mb-2 text-red-600">⚠️ Error</h3>
-          <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg p-3 text-sm">
-            <p className="text-red-900 dark:text-red-100">
-              Syntax error near {"'"}FROM{"'"}
+            <p className="text-xs text-muted-foreground italic mt-2">
+              SQL을 실행하면 정보가 표시됩니다 (18일차 구현 예정)
             </p>
           </div>
         </div>
