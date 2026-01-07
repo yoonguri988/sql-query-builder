@@ -92,7 +92,7 @@ export default function QueryBuilder() {
               <Separator />
 
               {/* 생성된 SQL 미리보기 */}
-              {generatedSQL && (
+              {/*generatedSQL && (
                 <div className="space-y-2">
                   <h3 className="text-lg font-semibold">6. 생성된 SQL</h3>
                   <div className="rounded-md bg-slate-950 dark:bg-slate-900 p-4 border">
@@ -101,7 +101,6 @@ export default function QueryBuilder() {
                     </code>
                   </div>
 
-                  {/* SQL 정보 */}
                   <div className="text-xs text-muted-foreground space-y-1">
                     <p>📊 쿼리 정보:</p>
                     <ul className="list-disc list-inside space-y-0.5 ml-2">
@@ -122,7 +121,7 @@ export default function QueryBuilder() {
                     </ul>
                   </div>
                 </div>
-              )}
+              )*/}
 
               {/* 액션 버튼 */}
               <ActionButtons />

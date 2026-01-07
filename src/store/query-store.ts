@@ -189,14 +189,14 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
     }
 
     // FROM 절
-    sql += ` FROM ${state.selectedTable}`;
+    sql += ` \nFROM ${state.selectedTable}`;
 
     // WHERE 절
     if (state.whereConditions.length > 0) {
-      sql += " WHERE ";
+      sql += " \nWHERE ";
       state.whereConditions.forEach((condition, index) => {
         if (index > 0 && condition.logicalOperator) {
-          sql += ` ${condition.logicalOperator} `;
+          sql += ` \n\t${condition.logicalOperator} `;
         }
 
         if (
@@ -224,7 +224,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
 
     // ORDER BY 절
     if (state.orderBy.length > 0) {
-      sql += " ORDER BY ";
+      sql += " \nORDER BY ";
       sql += state.orderBy
         .map((order) => `${order.column} ${order.direction}`)
         .join(", ");
@@ -232,7 +232,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
 
     // LIMIT 절
     if (state.limit > 0) {
-      sql += ` LIMIT ${state.limit}`;
+      sql += ` \nLIMIT ${state.limit}`;
     }
 
     set({ generatedSQL: sql });
