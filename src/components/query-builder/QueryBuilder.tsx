@@ -33,11 +33,11 @@ import ActionButtons from "./ActionButtons";
 export default function QueryBuilder() {
   const {
     selectedTable,
-    selectedColumns,
-    whereConditions,
-    orderBy,
-    limit,
-    generatedSQL,
+    // selectedColumns,
+    // whereConditions,
+    // orderBy,
+    // limit,
+    // generatedSQL,
   } = useQueryStore();
 
   return (
