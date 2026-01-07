@@ -3,7 +3,7 @@
 import { X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
 import { Button } from "../ui/button";
-import { SQLPreview } from "../sql-preview/SQLPreview";
+import SQLPreview from "../sql-preview/SQLPreview";
 
 /**
  * 오른쪽 패널 컴포넌트

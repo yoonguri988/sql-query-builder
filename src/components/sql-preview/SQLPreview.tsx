@@ -27,7 +27,7 @@ interface SQLPreviewProps {
   isDark?: boolean; // 다크모드 상태
 }
 
-export function SQLPreview({ isDark = false }: SQLPreviewProps) {
+export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const error = useQueryStore((state) => state.error);
 
