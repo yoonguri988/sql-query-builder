@@ -6,7 +6,6 @@
  * - 에러가 있으면 에러 메시지 표시
  * - SQL이 없으면 안내 메시지 표시
  */
-"use client";
 
 import { useQueryStore } from "@/store/query-store";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -14,6 +13,11 @@ import {
   vscDarkPlus,
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
+
+import { Button } from "@/components/ui/button";
+import { Copy, Check } from "lucide-react";
+import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
+import { useToast } from "@/hooks/use-toast";
 
 /**
  * SQL 프리뷰 컴포넌트
@@ -31,10 +35,38 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const error = useQueryStore((state) => state.error);
 
+  // 복사 Hook 사용
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const { toast } = useToast();
+
   // 다크모드에 따라 스타일 선택
   const syntaxStyle = isDark ? vscDarkPlus : vs;
 
-  // 에러 상태
+  // 복사 핸들러
+  const handleCopy = async () => {
+    if (generatedSQL) {
+      const success = await copyToClipboard(generatedSQL);
+
+      if (success) {
+        // 복사 성공 Toast
+        toast({
+          title: "복사 완료",
+          description: "SQL 쿼리가 클립보드에 복사되었습니다.",
+          duration: 2000,
+        });
+      } else {
+        // 복사 실패 Toast
+        toast({
+          title: "복사 실패",
+          description: "클립보드 접근 권한을 확인해주세요.",
+          variant: "destructive",
+          duration: 3000,
+        });
+      }
+    }
+  };
+
+  // 에러 상태 (기존 코드 유지)
   if (error) {
     return (
       <div className="p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
@@ -65,7 +97,7 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
     );
   }
 
-  // SQL이 없는 상태
+  // SQL이 없는 상태 (기존 코드 유지)
   if (!generatedSQL) {
     return (
       <div className="p-8 text-center border-2 border-dashed rounded-lg">
@@ -92,12 +124,13 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
     );
   }
 
-  // 정상 상태: SQL 표시
+  // 정상 상태: 복사 버튼 추가
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">생성된 SQL</h3>
-        <div className="flex items-center gap-1">
+        {/* 수정: "유효" 뱃지와 복사 버튼을 함께 */}
+        <div className="flex items-center gap-2">
           <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-100 dark:bg-green-950 text-xs font-medium text-green-700 dark:text-green-300">
             <svg
               className="w-3 h-3 mr-1"
@@ -112,10 +145,30 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
             </svg>
             유효
           </span>
+
+          {/* 복사 버튼 */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleCopy}
+            className="h-7 gap-1.5"
+          >
+            {isCopied ? (
+              <>
+                <Check className="h-3.5 w-3.5" />
+                <span className="text-xs">복사됨</span>
+              </>
+            ) : (
+              <>
+                <Copy className="h-3.5 w-3.5" />
+                <span className="text-xs">복사</span>
+              </>
+            )}
+          </Button>
         </div>
       </div>
 
-      {/* Syntax Highlighting */}
+      {/* Syntax Highlighting (기존 코드 유지) */}
       <div className="relative">
         <SyntaxHighlighter
           language="sql"
@@ -134,7 +187,7 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
           {generatedSQL}
         </SyntaxHighlighter>
 
-        {/* SQL 줄 수 표시 */}
+        {/* SQL 줄 수 표시 (기존 코드 유지) */}
         <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
           <span>{generatedSQL.split("\n").length} 줄</span>
           <span>{generatedSQL.length} 문자</span>
