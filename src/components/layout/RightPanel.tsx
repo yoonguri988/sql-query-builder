@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
 import { Button } from "../ui/button";
 import SQLPreview from "@/components/sql-preview/SQLPreview";
+import ExecutionInfo from "@/components/sql-preview/ExecutionInfo";
 
 export default function RightPanel({
   isOpen,
@@ -57,42 +58,7 @@ export default function RightPanel({
 
         {/* 실행 정보 섹션 (19일차 구현 예정) */}
         <section>
-          <div className="flex items-center gap-2 mb-3">
-            <svg
-              className="h-4 w-4 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <h3 className="text-sm font-semibold">Execution Info</h3>
-          </div>
-
-          <div className="bg-muted/30 border rounded-lg p-4 space-y-3 text-sm">
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Rows:</span>
-              <span className="font-medium">-</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Execution Time:</span>
-              <span className="font-medium">-</span>
-            </div>
-            <div className="flex justify-between items-center">
-              <span className="text-muted-foreground">Status:</span>
-              <span className="font-medium text-muted-foreground">Ready</span>
-            </div>
-            <div className="pt-3 border-t">
-              <p className="text-xs text-muted-foreground italic">
-                SQL을 실행하면 정보가 표시됩니다 (19일차 구현 예정)
-              </p>
-            </div>
-          </div>
+          <ExecutionInfo />
         </section>
       </div>
     </aside>
