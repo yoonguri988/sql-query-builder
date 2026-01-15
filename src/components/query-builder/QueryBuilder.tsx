@@ -89,8 +89,6 @@ export default function QueryBuilder() {
                 <LimitInput />
               </div>
 
-              <Separator />
-
               {/* 생성된 SQL 미리보기 */}
               {/*generatedSQL && (
                 <div className="space-y-2">

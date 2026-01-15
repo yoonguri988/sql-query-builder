@@ -5,7 +5,7 @@ import {
   OrderByClause,
   QueryHistoryItem,
 } from "@/types/query";
-import { executeQuery as dbExecuteQuery } from "@/lib/db/init-db";
+import { executeQuery as dbExecuteQuery, initDatabase } from "@/lib/db/init-db";
 import validateQueryState from "@/lib/query/validateQueryState";
 import { escapeSQLString } from "@/lib/utils";
 
@@ -35,7 +35,14 @@ interface QueryStore extends QueryState {
   // SQL 생성
   generateSQL: () => void;
 
-  // 쿼리 실행
+  // 실행 관련 상태 추가
+  isExecuting: boolean;
+  isDbInitialized: boolean;
+
+  // DB 초기화 액션
+  initDB: () => Promise<void>;
+
+  // 쿼리 실행 (기존)
   executeQuery: () => Promise<void>;
 
   // 리셋
@@ -62,6 +69,9 @@ const initialState: QueryState = {
 export const useQueryStore = create<QueryStore>((set, get) => ({
   ...initialState,
   queryHistory: [],
+
+  isExecuting: false,
+  isDbInitialized: false,
   // FROM 절
   setSelectedTable: (table) => {
     set({
@@ -247,19 +257,42 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       return;
     }
 
+    // DB 초기화 체크 (자동 초기화)
+    if (!state.isDbInitialized) {
+      console.log("DB 미초기화 상태. 자동 초기화 실행...");
+      await get().initDB();
+    }
+
+    // 실행 시작 - isExecuting true
+    set({
+      isExecuting: true,
+      error: null,
+      queryResult: null,
+      executionTime: null,
+    });
+
     try {
+      console.log("SQL 실행 시작:", state.generatedSQL);
+
       const startTime = performance.now();
 
-      // SQL.js 데이터베이스에서 쿼리 실행
-      const result = dbExecuteQuery(state.generatedSQL);
+      // await 추가 - 매우 중요!
+      const result = await dbExecuteQuery(state.generatedSQL);
 
       const endTime = performance.now();
       const executionTime = Math.round(endTime - startTime);
 
+      console.log("SQL 실행 완료:", {
+        rowCount: result.rowCount,
+        executionTime: `${executionTime}ms`,
+      });
+
+      // 결과 저장 + isExecuting false
       set({
         queryResult: result,
         executionTime,
         error: null,
+        isExecuting: false,
       });
 
       // 히스토리에 추가
@@ -268,9 +301,12 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         sql: state.generatedSQL,
         timestamp: new Date(),
         executionTime,
-        rowCount: 0,
+        rowCount: result.rowCount,
       });
     } catch (error) {
+      console.error("SQL 실행 실패:", error);
+
+      // 에러 저장 + isExecuting false
       set({
         error:
           error instanceof Error
@@ -278,12 +314,39 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
             : "쿼리 실행 중 오류가 발생했습니다.",
         queryResult: null,
         executionTime: null,
+        isExecuting: false,
+      });
+    }
+  },
+  // DB 초기화 함수
+  initDB: async () => {
+    // 이미 초기화됨
+    if (get().isDbInitialized) {
+      console.log("DB 이미 초기화됨");
+      return;
+    }
+
+    try {
+      console.log("데이터베이스 초기화 시작...");
+      await initDatabase(true);
+      set({ isDbInitialized: true });
+      console.log("데이터베이스 초기화 완료");
+    } catch (error) {
+      console.error("데이터베이스 초기화 실패:", error);
+      set({
+        error: "데이터베이스 초기화에 실패했습니다.",
+        isDbInitialized: false,
       });
     }
   },
   // 리셋
   reset: () => {
-    set(initialState);
+    set({
+      ...initialState,
+      // 실행 상태도 초기화
+      isExecuting: false,
+      queryHistory: get().queryHistory, // 히스토리는 유지
+    });
   },
 
   // 쿼리 히스토리
