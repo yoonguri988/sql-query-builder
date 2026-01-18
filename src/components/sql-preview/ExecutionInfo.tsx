@@ -1,7 +1,14 @@
 "use client";
 
 import { useQueryStore } from "@/store/query-store";
-import { Clock, Database, CheckCircle2, XCircle, Loader2 } from "lucide-react";
+import {
+  Clock,
+  Database,
+  CheckCircle2,
+  XCircle,
+  Loader2,
+  Columns,
+} from "lucide-react";
 
 /**
  * SQL 실행 정보 표시 컴포넌트
@@ -41,7 +48,7 @@ export default function ExecutionInfo() {
             <p className="font-medium text-red-900 dark:text-red-100">
               실행 오류
             </p>
-            <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+            <p className="text-sm text-red-700 dark:text-red-300 mt-1 whitespace-pre-wrap">
               {error}
             </p>
           </div>
@@ -50,7 +57,7 @@ export default function ExecutionInfo() {
     );
   }
 
-  // 결과가 있는 경우
+  // 결과가 있는 경우 (성공 상태)
   if (queryResult) {
     return (
       <div className="space-y-4">
@@ -73,16 +80,24 @@ export default function ExecutionInfo() {
             </span>
           </div>
 
-          {/* 실행 시간 */}
+          {/* 실행 시간 - executionTime을 별도 상태로 관리 */}
           {executionTime !== null && (
             <div className="flex justify-between items-center">
               <div className="flex items-center gap-2 text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 <span>Execution Time:</span>
               </div>
-              <span className="font-medium">
+              <span
+                className={`font-medium ${
+                  executionTime < 100
+                    ? "text-green-600 dark:text-green-400"
+                    : executionTime < 500
+                      ? "text-yellow-600 dark:text-yellow-400"
+                      : "text-red-600 dark:text-red-400"
+                }`}
+              >
                 {executionTime < 1000
-                  ? `${executionTime}ms`
+                  ? `${executionTime.toFixed(2)}ms`
                   : `${(executionTime / 1000).toFixed(2)}s`}
               </span>
             </div>
@@ -90,7 +105,10 @@ export default function ExecutionInfo() {
 
           {/* 컬럼 목록 */}
           <div className="pt-3 border-t">
-            <div className="text-muted-foreground mb-2">Columns:</div>
+            <div className="flex items-center gap-2 text-muted-foreground mb-2">
+              <Columns className="h-4 w-4" />
+              <span>Columns ({queryResult.columns.length}):</span>
+            </div>
             <div className="flex flex-wrap gap-1">
               {queryResult.columns.map((col) => (
                 <span
@@ -106,8 +124,8 @@ export default function ExecutionInfo() {
           {/* 결과 없음 메시지 */}
           {queryResult.rowCount === 0 && (
             <div className="pt-3 border-t">
-              <p className="text-xs text-muted-foreground italic">
-                조건에 맞는 데이터가 없습니다.
+              <p className="text-xs text-yellow-600 dark:text-yellow-400">
+                ⚠️ 조건에 맞는 데이터가 없습니다.
               </p>
             </div>
           )}
@@ -120,17 +138,26 @@ export default function ExecutionInfo() {
   return (
     <div className="bg-muted/30 border rounded-lg p-4 space-y-3 text-sm">
       <div className="flex justify-between items-center">
-        <span className="text-muted-foreground">Rows:</span>
-        <span className="font-medium">-</span>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Database className="h-4 w-4" />
+          <span>Rows:</span>
+        </div>
+        <span className="font-medium text-muted-foreground">-</span>
       </div>
+
       <div className="flex justify-between items-center">
-        <span className="text-muted-foreground">Execution Time:</span>
-        <span className="font-medium">-</span>
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Clock className="h-4 w-4" />
+          <span>Execution Time:</span>
+        </div>
+        <span className="font-medium text-muted-foreground">-</span>
       </div>
+
       <div className="flex justify-between items-center">
         <span className="text-muted-foreground">Status:</span>
         <span className="font-medium text-muted-foreground">Ready</span>
       </div>
+
       <div className="pt-3 border-t">
         <p className="text-xs text-muted-foreground italic">
           SQL을 실행하면 정보가 표시됩니다
