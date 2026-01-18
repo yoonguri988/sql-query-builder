@@ -8,6 +8,7 @@ import {
 import { executeQuery as dbExecuteQuery, initDatabase } from "@/lib/db/init-db";
 import validateQueryState from "@/lib/query/validateQueryState";
 import { escapeSQLString } from "@/lib/utils";
+import { SQLExecutionError } from "@/lib/db/sql-errors";
 
 interface QueryStore extends QueryState {
   // FROM 액션
@@ -47,6 +48,10 @@ interface QueryStore extends QueryState {
 
   // 리셋
   reset: () => void;
+  // 초기화 액션들
+  resetExecution: () => void;
+  resetAll: () => void;
+  resetWhereConditions: () => void;
 
   // 쿼리 히스토리
   queryHistory: QueryHistoryItem[];
@@ -253,7 +258,10 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
     const state = get();
 
     if (!state.generatedSQL) {
-      set({ error: "SQL 쿼리가 생성되지 않았습니다." });
+      set({
+        error: "SQL 쿼리가 생성되지 않았습니다.",
+        queryResult: null,
+      });
       return;
     }
 
@@ -303,18 +311,24 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         executionTime,
         rowCount: result.rowCount,
       });
-    } catch (error) {
-      console.error("SQL 실행 실패:", error);
+    } catch (e) {
+      let errorMessage = "쿼리 실행 중 오류가 발생했습니다.";
 
-      // 에러 저장 + isExecuting false
+      if (e instanceof SQLExecutionError) {
+        errorMessage = e.getUserMessage();
+
+        // 개발 모드에서 콘솔에 상세 정보 출력
+        if (process.env.NODE_ENV === "development") {
+          console.error(e.getDebugInfo());
+        }
+      } else if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+
       set({
-        error:
-          error instanceof Error
-            ? error.message
-            : "쿼리 실행 중 오류가 발생했습니다.",
-        queryResult: null,
-        executionTime: null,
+        error: errorMessage,
         isExecuting: false,
+        queryResult: null,
       });
     }
   },
@@ -348,7 +362,34 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       queryHistory: get().queryHistory, // 히스토리는 유지
     });
   },
+  // 실행 관련 상태만 초기화
+  resetExecution: () => {
+    set({
+      queryResult: null,
+      executionTime: null,
+      isExecuting: false,
+    });
+  },
 
+  // WHERE 조건만 초기화
+  resetWhereConditions: () => {
+    set({
+      whereConditions: [],
+    });
+    get().generateSQL();
+  },
+
+  // 전체 상태 초기화
+  resetAll: () => {
+    set({
+      ...initialState,
+      queryResult: null,
+      executionTime: null,
+      isExecuting: false,
+      generatedSQL: "",
+      error: null,
+    });
+  },
   // 쿼리 히스토리
   addToHistory: (item) => {
     set((state) => ({

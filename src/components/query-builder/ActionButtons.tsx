@@ -1,9 +1,8 @@
 "use client";
 
 import { useQueryStore } from "@/store/query-store";
-import { Button } from "@/components/ui/button";
-import { RotateCcw } from "lucide-react";
 import ExecuteButton from "@/components/query-builder/ExecuteButton";
+import ResetButtons from "@/components/query-builder/ResetButtons";
 
 /**
  * ActionButtons 컴포넌트
@@ -23,15 +22,7 @@ export default function ActionButtons() {
       {/* Execute 버튼 */}
       <ExecuteButton />
       {/* Reset 버튼 */}
-      <Button
-        type="button"
-        variant="outline"
-        onClick={reset}
-        className="min-w-[100px]"
-      >
-        <RotateCcw className="h-4 w-4 mr-2" />
-        초기화
-      </Button>
+      <ResetButtons />
     </div>
   );
 }
