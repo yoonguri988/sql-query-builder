@@ -1,6 +1,5 @@
 "use client";
 
-import { useQueryStore } from "@/store/query-store";
 import ExecuteButton from "@/components/query-builder/ExecuteButton";
 import ResetButtons from "@/components/query-builder/ResetButtons";
 
@@ -15,8 +14,6 @@ import ResetButtons from "@/components/query-builder/ResetButtons";
  * @component
  */
 export default function ActionButtons() {
-  const reset = useQueryStore((state) => state.reset);
-
   return (
     <div className="flex items-center justify-end gap-3 pt-4 border-t">
       {/* Execute 버튼 */}

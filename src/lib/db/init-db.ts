@@ -94,7 +94,7 @@ export async function executeQuery(sql: string): Promise<QueryResult> {
     }
 
     // 쿼리 실행 - 시간 측정
-    const startTime = performance.now();
+    // const startTime = performance.now();
     let result;
     try {
       result = database.exec(sql);
@@ -104,7 +104,7 @@ export async function executeQuery(sql: string): Promise<QueryResult> {
     }
 
     // 쿼리 실행 - 시간 측정
-    const executionTime = performance.now() - startTime;
+    // const executionTime = performance.now() - startTime;
 
     // 결과 처리 - 결과 없음
     if (!result || result.length === 0) {
