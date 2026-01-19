@@ -1,9 +1,11 @@
 "use client";
 
+type CellValue = string | number | boolean | null | undefined;
+
 /**
  * 셀 값을 포맷팅하고 스타일을 적용하는 헬퍼 함수
  */
-export function formatCellValue(value: any) {
+export function formatCellValue(value: CellValue) {
   // null/undefined 처리
   if (value === null || value === undefined) {
     return <span className="text-gray-400 italic">NULL</span>;

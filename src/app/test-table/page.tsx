@@ -1,17 +1,14 @@
 // src/app/test-table/page.tsx
 "use client";
 
-import { useEffect } from "react";
 import { ResultsTable } from "@/components/results/ResultsTable";
 import { useQueryStore } from "@/store/query-store";
 import { Button } from "@/components/ui/button";
-import WhereClauseBuilder from "@/components/query-builder/WhereClauseBuilder";
 
 /**
  * ResultsTable 컴포넌트를 테스트하기 위한 페이지
  */
 export default function TestTablePage() {
-  const setQueryResult = useQueryStore((state) => state.queryResult);
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const setSelectedTable = useQueryStore((state) => state.setSelectedTable);
   const setSelectedColumns = useQueryStore((state) => state.setSelectedColumns);
