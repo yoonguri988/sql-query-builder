@@ -4,6 +4,8 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  SortingState,
+  getSortedRowModel,
 } from "@tanstack/react-table";
 import { CellValue, TableData } from "@/types/table";
 import {
@@ -17,12 +19,16 @@ import {
 import { formatCellValue } from "@/lib/helper";
 import { useQueryStore } from "@/store/query-store";
 import useResultColumns from "@/hooks/useResultColumns";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import SortingIcon from "./SortingIcon";
 
 /**
  * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
  */
-export function ResultsTable() {
+export default function ResultsTable() {
+  // 정렬 상태 관리
+  const [sorting, setSorting] = useState<SortingState>([]);
+
   // 동적으로 컬럼 정의 생성
   const { queryResult, isExecuting, error } = useQueryStore();
 
@@ -48,7 +54,13 @@ export function ResultsTable() {
   const table = useReactTable({
     data,
     columns,
+    // 정렬 관련 설정
+    state: {
+      sorting,
+    },
+    onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // 정렬 모델 활성화
   });
 
   // 로딩 상태
@@ -109,12 +121,24 @@ export function ResultsTable() {
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <TableHead key={header.id} className="font-semibold">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
+                  {header.isPlaceholder ? null : (
+                    <div
+                      className={
+                        header.column.getCanSort()
+                          ? "flex items-center space-x-2 cursor-pointer select-none"
+                          : ""
+                      }
+                      onClick={header.column.getToggleSortingHandler()}
+                    >
+                      {flexRender(
                         header.column.columnDef.header,
                         header.getContext()
                       )}
+                      {header.column.getCanSort() && (
+                        <SortingIcon isSorted={header.column.getIsSorted()} />
+                      )}
+                    </div>
+                  )}
                 </TableHead>
               ))}
             </TableRow>

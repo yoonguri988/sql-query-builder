@@ -31,6 +31,9 @@ export default function useResultColumns(
 
       // 데이터 접근 키
       accessorKey: columnName,
+
+      // 모든 컬럼 정렬 가능
+      enableSorting: true,
     }));
   }, [data, columnNames]);
 }

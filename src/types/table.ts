@@ -1,3 +1,5 @@
+import { SortingState } from "@tanstack/react-table";
+
 /**
  * TanStack Table에서 사용할 타입 정의
  */
@@ -21,6 +23,8 @@ export interface TableColumn {
   accessorKey: string;
   /** 컬럼 타입 (정렬 및 포맷팅에 사용) */
   type?: "string" | "number" | "date" | "boolean" | "blob";
+  /** 정렬 가능 여부 */
+  enableSorting?: boolean;
 }
 
 /**
@@ -44,3 +48,6 @@ export interface QueryResult {
   /** 행 개수 */
   rowCount: number;
 }
+
+/** 정렬 상태 타입 */
+export type TableSortingState = SortingState;
