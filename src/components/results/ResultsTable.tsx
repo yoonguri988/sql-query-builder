@@ -4,6 +4,10 @@ import {
   useReactTable,
   getCoreRowModel,
   flexRender,
+  SortingState,
+  getSortedRowModel,
+  PaginationState,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 import { CellValue, TableData } from "@/types/table";
 import {
@@ -17,12 +21,23 @@ import {
 import { formatCellValue } from "@/lib/helper";
 import { useQueryStore } from "@/store/query-store";
 import useResultColumns from "@/hooks/useResultColumns";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
+import SortingIcon from "./SortingIcon";
+import PaginationControls from "./PaginationControls";
+import { cn } from "@/lib/utils";
 
 /**
  * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
  */
-export function ResultsTable() {
+export default function ResultsTable() {
+  // 정렬 상태 관리
+  const [sorting, setSorting] = useState<SortingState>([]);
+  // 페이지네이션 상태
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0, // 첫 페이지
+    pageSize: 10, // 기본 10개씩
+  });
+
   // 동적으로 컬럼 정의 생성
   const { queryResult, isExecuting, error } = useQueryStore();
 
@@ -48,7 +63,19 @@ export function ResultsTable() {
   const table = useReactTable({
     data,
     columns,
+    // 정렬 관련 설정
+    state: {
+      sorting,
+      pagination,
+    },
+    onSortingChange: (updater) => {
+      setSorting(updater);
+      table.setPageIndex(0); // 정렬 변경 시 첫 페이지로
+    },
+    onPaginationChange: setPagination, // 페이지네이션 핸들러
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), // 정렬 모델 활성화
+    getPaginationRowModel: getPaginationRowModel(), // 페이지네이션 모델 활성화
   });
 
   // 로딩 상태
@@ -102,36 +129,58 @@ export function ResultsTable() {
 
   // 테이블 렌더링
   return (
-    <div className="rounded-md border">
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => (
-                <TableHead key={header.id} className="font-semibold">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                </TableHead>
-              ))}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows.map((row) => (
-            <TableRow key={row.id} className="hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <TableCell key={cell.id}>
-                  {formatCellValue(cell.getValue() as CellValue)}
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+    <div className="w-full space-y-4">
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader className="sticky top-0 bg-background z-10">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead key={header.id} className="font-semibold">
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={
+                          header.column.getCanSort()
+                            ? "flex items-center space-x-2 cursor-pointer select-none"
+                            : ""
+                        }
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {header.column.getCanSort() && (
+                          <SortingIcon isSorted={header.column.getIsSorted()} />
+                        )}
+                      </div>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows.map((row) => (
+              <TableRow
+                key={row.id}
+                data-state={row.getIsSelected() && "selected"}
+                className={cn(
+                  "hover:bg-muted/50 transition-colors",
+                  row.index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                )}
+              >
+                {row.getVisibleCells().map((cell) => (
+                  <TableCell key={cell.id}>
+                    {formatCellValue(cell.getValue() as CellValue)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      <PaginationControls table={table} />
     </div>
   );
 }
