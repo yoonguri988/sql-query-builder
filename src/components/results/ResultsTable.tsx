@@ -1,12 +1,11 @@
-import { useQueryStore } from "@/store/query-store";
+"use client";
+
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Clock, Database, Download } from "lucide-react";
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+} from "@tanstack/react-table";
+import { TableData } from "@/types/table";
 import {
   Table,
   TableBody,
@@ -15,173 +14,124 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+import { formatCellValue } from "@/lib/helper";
+import { useQueryStore } from "@/store/query-store";
+import useResultColumns from "@/hooks/useResultColumns";
+import { useMemo } from "react";
 
 /**
- * ResultsTable 컴포넌트
- * SQL 쿼리 실행 결과를 테이블로 표시
- *
- * 기능:
- * - 결과 테이블 표시
- * - 실행 시간 표시
- * - 행 개수 표시
- * - CSV 다운로드 (선택적)
- *
- * @component
+ * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
  */
-export default function ResultsTable() {
-  const { queryResult, executionTime, error } = useQueryStore();
+export function ResultsTable() {
+  // 동적으로 컬럼 정의 생성
+  const { queryResult, isExecuting, error } = useQueryStore();
 
-  // 결과가 없을 때
-  if (!queryResult && !error) {
+  // SQL.js 결과를 객체 배열로 변환
+  const data: TableData[] = useMemo(() => {
+    if (!queryResult || !queryResult.values || !queryResult.columns) {
+      return [];
+    }
+    // values 배열을 객체 배열로 변환
+    return queryResult.values.map((row) => {
+      const rowObject: TableData = {};
+      queryResult.columns.forEach((columnName, index) => {
+        rowObject[columnName] = row[index];
+      });
+      return rowObject;
+    });
+  }, [queryResult]);
+
+  // 동적으로 컬럼 정의 생성
+  const columns = useResultColumns(data, queryResult?.columns);
+
+  // TanStack Table 인스턴스 생성
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
+  // 로딩 상태
+  if (isExecuting) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
-            쿼리 결과
-          </CardTitle>
-          <CardDescription>
-            Execute 버튼을 클릭하여 쿼리를 실행하세요
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <Database className="h-12 w-12 mx-auto mb-4 opacity-50" />
-            <p>아직 실행된 쿼리가 없습니다</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Executing query...</p>
+        </div>
+      </div>
     );
   }
 
-  // 에러가 있을 때
+  // 에러 상태
   if (error) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-red-600">
-            <Database className="h-5 w-5" />
-            쿼리 오류
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 p-4">
-            <p className="text-sm text-red-800 dark:text-red-200 font-mono">
-              {error}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-64">
+        <div className="text-center text-red-600">
+          <svg
+            className="w-12 h-12 mx-auto mb-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+          <p className="text-lg font-medium">Query Error</p>
+          <p className="text-sm mt-2 text-gray-600">{error}</p>
+        </div>
+      </div>
     );
   }
 
-  // 결과가 있을 때
-  if (!queryResult || queryResult.columns.length === 0) {
+  // 빈 데이터 처리
+  if (!data || data.length === 0) {
     return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
-            쿼리 결과
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-center py-12 text-muted-foreground">
-            <p>결과가 없습니다 (0 rows)</p>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center h-64 text-gray-500">
+        <div className="text-center">
+          <p className="text-lg font-medium">No results found</p>
+          <p className="text-sm mt-2">Execute a query to see results here</p>
+        </div>
+      </div>
     );
   }
 
-  const { columns, values } = queryResult;
-
-  // CSV 다운로드
-  const handleDownloadCSV = () => {
-    const csvContent = [
-      columns.join(","),
-      ...values.map((row) => row.join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `query_results_${Date.now()}.csv`;
-    link.click();
-  };
-
+  // 테이블 렌더링
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
-              쿼리 결과
-            </CardTitle>
-            <CardDescription className="flex items-center gap-4 mt-2">
-              <span className="flex items-center gap-1">
-                <strong>{values.length}</strong> rows
-              </span>
-              {executionTime !== null && (
-                <span className="flex items-center gap-1">
-                  <Clock className="h-3 w-3" />
-                  <strong>{executionTime}</strong> ms
-                </span>
-              )}
-            </CardDescription>
-          </div>
-
-          {/* CSV 다운로드 버튼 */}
-          <Button variant="outline" size="sm" onClick={handleDownloadCSV}>
-            <Download className="h-4 w-4 mr-2" />
-            CSV 다운로드
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <div className="rounded-md border">
-          <div className="max-h-[500px] overflow-auto">
-            <Table>
-              <TableHeader className="sticky top-0 bg-background z-10 shadow-sm">
-                <TableRow>
-                  {columns.map((column, index) => (
-                    <TableHead key={index} className="font-mono font-semibold">
-                      {column}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {values.map((row, rowIndex) => (
-                  <TableRow key={rowIndex}>
-                    {row.map((cell, cellIndex) => (
-                      <TableCell key={cellIndex} className="font-mono text-sm">
-                        {cell === null ? (
-                          <span className="text-muted-foreground italic">
-                            NULL
-                          </span>
-                        ) : (
-                          String(cell)
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
-
-        {/* 페이지네이션 안내 */}
-        {values.length >= 100 && (
-          <div className="mt-4 text-xs text-muted-foreground text-center">
-            💡 많은 결과가 표시되고 있습니다. LIMIT을 사용하여 결과를 제한할 수
-            있습니다.
-          </div>
-        )}
-      </CardContent>
-    </Card>
+    <div className="rounded-md border">
+      <Table>
+        <TableHeader>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <TableRow key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <TableHead key={header.id} className="font-semibold">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </TableHead>
+              ))}
+            </TableRow>
+          ))}
+        </TableHeader>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id} className="hover:bg-gray-50">
+              {row.getVisibleCells().map((cell) => (
+                <TableCell key={cell.id}>
+                  {formatCellValue(cell.getValue())}
+                </TableCell>
+              ))}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
