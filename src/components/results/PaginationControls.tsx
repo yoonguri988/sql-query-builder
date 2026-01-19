@@ -7,9 +7,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Table } from "@tanstack/react-table";
+import { TableData } from "@/types/table";
+
+// 페이지네이션 컨트롤 컴포넌트 - 올바른 타입 정의
+interface PaginationControlsProps {
+  table: Table<TableData>;
+}
 
 // 페이지네이션 컨트롤 컴포넌트
-export default function PaginationControls({ table }: { table: any }) {
+export default function PaginationControls({ table }: PaginationControlsProps) {
   return (
     <div className="flex items-center justify-between px-2">
       {/* 페이지 정보 */}
