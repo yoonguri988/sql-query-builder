@@ -5,7 +5,7 @@ import {
   getCoreRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { TableData } from "@/types/table";
+import { CellValue, TableData } from "@/types/table";
 import {
   Table,
   TableBody,
@@ -125,7 +125,7 @@ export function ResultsTable() {
             <TableRow key={row.id} className="hover:bg-gray-50">
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
-                  {formatCellValue(cell.getValue())}
+                  {formatCellValue(cell.getValue() as CellValue)}
                 </TableCell>
               ))}
             </TableRow>

@@ -4,6 +4,12 @@
 
 import { TableData } from "./table";
 
+/**
+ * SQL 값의 기본 타입
+ * SQL.js에서 반환할 수 있는 모든 값 타입
+ */
+export type SqlValue = string | number | boolean | null | Uint8Array;
+
 // WHERE 조건 연산자
 export type WhereOperator =
   | "="
@@ -70,7 +76,14 @@ export interface QueryState {
 // Query 실행 결과
 export interface QueryResult {
   columns: string[];
-  values: TableData[]; //
+  values: SqlValue[][]; //
+  rowCount: number;
+}
+
+// 변환된 형태 결과
+export interface TransformedQueryResult {
+  columns: string[];
+  data: TableData[]; // 객체 배열
   rowCount: number;
 }
 
