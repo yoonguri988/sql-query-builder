@@ -1,6 +1,13 @@
 /**
  * TanStack Table에서 사용할 타입 정의
  */
+export type CellValue =
+  | string
+  | number
+  | boolean
+  | null
+  | undefined
+  | Uint8Array;
 
 /**
  * 테이블 컬럼 정의
@@ -13,7 +20,7 @@ export interface TableColumn {
   /** 데이터 객체에서 값을 가져올 키 */
   accessorKey: string;
   /** 컬럼 타입 (정렬 및 포맷팅에 사용) */
-  type?: "string" | "number" | "date" | "boolean";
+  type?: "string" | "number" | "date" | "boolean" | "blob";
 }
 
 /**
@@ -21,7 +28,7 @@ export interface TableColumn {
  * - 동적으로 생성되는 SQL 결과를 담기 위해 인덱스 시그니처 사용
  */
 export interface TableData {
-  [key: string]: string | number | boolean | null | undefined;
+  [key: string]: CellValue;
 }
 
 /**
@@ -36,8 +43,4 @@ export interface QueryResult {
   executionTime: number;
   /** 행 개수 */
   rowCount: number;
-}
-
-export interface ResultsTableProps {
-  data: TableData[];
 }

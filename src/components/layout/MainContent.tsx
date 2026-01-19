@@ -3,7 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MainContentProps } from "@/types/layout";
 import QueryBuilder from "@/components/query-builder/QueryBuilder";
-import ResultsTable from "@/components/results/ResultsTable";
+import { ResultsTable } from "@/components/results/ResultsTable";
 import { useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 
