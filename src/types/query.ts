@@ -1,6 +1,9 @@
 /**
  * SQL 쿼리 타입 정의
  */
+
+import { TableData } from "./table";
+
 // WHERE 조건 연산자
 export type WhereOperator =
   | "="
@@ -64,13 +67,10 @@ export interface QueryState {
   error: string | null;
 }
 
-/** 251230 any 대신 구체적인 타입을 정의 */
-export type SqlValue = string | number | null | boolean;
-
 // Query 실행 결과
 export interface QueryResult {
   columns: string[];
-  values: SqlValue[][]; //
+  values: TableData[]; //
   rowCount: number;
 }
 
