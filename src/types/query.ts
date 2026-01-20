@@ -63,28 +63,29 @@ export interface QueryState {
   // 생성된 SQL
   generatedSQL: string;
 
-  // 쿼리 결과: any[] | null;
-  /* ?? any 대신 구체적인 타입을 정의 하도록 노력 */
-  // queryResult: any[] | null;
-  queryResult: QueryResult | null;
-
+  queryResult: TransformedQueryResult | null; // 이미 변환된 형태 사용
   // 실행 메타 데이터
-  executionTime: number | null;
-  error: string | null;
+  executionMetadata: ExecutionMetadata | null; // 이름 변경 및 타입 명확화
 }
 
-// Query 실행 결과
+// SQL.js에서 반환하는 원시 데이터
 export interface QueryResult {
   columns: string[];
   values: SqlValue[][]; //
   rowCount: number;
 }
 
-// 변환된 형태 결과
+// UI에서 사용할 변환된 데이터
 export interface TransformedQueryResult {
   columns: string[];
   data: TableData[]; // 객체 배열
   rowCount: number;
+}
+
+// 변환된 데이터 + 실행 정보 (통합)
+export interface ExecutionResult {
+  data: TransformedQueryResult;
+  metadata: ExecutionMetadata;
 }
 
 // Query History Item
@@ -94,4 +95,17 @@ export interface QueryHistoryItem {
   timestamp: Date;
   executionTime: number;
   rowCount: number;
+  // 히스토리 타입 확장
+  status: "success" | "error";
+  error?: string;
+  queryState?: QueryState; // 쿼리 빌더 상태 저장
+}
+
+// 실행 정보 (시간, 상태, 에러)
+export interface ExecutionMetadata {
+  executionTime: number; // milliseconds
+  rowCount: number;
+  status: "success" | "error" | "idle";
+  error?: string;
+  timestamp: Date;
 }
