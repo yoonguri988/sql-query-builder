@@ -43,26 +43,39 @@ export default function ResultsTable() {
   // 선택 상태
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
-  // 동적으로 컬럼 정의 생성
+  // 스토어에서 데이터 가져오기
   const { queryResult, isExecuting, error } = useQueryStore();
 
-  // SQL.js 결과를 객체 배열로 변환
+  // ✅ 올바른 데이터 구조로 변환
   const data: TableData[] = useMemo(() => {
-    if (!queryResult || !queryResult.values || !queryResult.columns) {
+    // queryResult가 없거나 data 배열이 없으면 빈 배열 반환
+    if (!queryResult || !queryResult.data || queryResult.data.length === 0) {
       return [];
     }
-    // values 배열을 객체 배열로 변환
-    return queryResult.values.map((row) => {
-      const rowObject: TableData = {};
-      queryResult.columns.forEach((columnName, index) => {
-        rowObject[columnName] = row[index];
-      });
-      return rowObject;
-    });
+
+    // queryResult.data가 이미 객체 배열 형태라면 그대로 사용
+    // TransformedQueryResult의 data는 이미 { [key: string]: CellValue }[] 형태
+    return queryResult.data as TableData[];
   }, [queryResult]);
 
+  // ✅ columns 추출 (첫 번째 데이터 객체의 키 사용)
+  const columnNames = useMemo(() => {
+    if (
+      !queryResult ||
+      !queryResult.columns ||
+      queryResult.columns.length === 0
+    ) {
+      // data가 있으면 첫 번째 객체의 키를 사용
+      if (data.length > 0) {
+        return Object.keys(data[0]);
+      }
+      return [];
+    }
+    return queryResult.columns;
+  }, [queryResult, data]);
+
   // 동적으로 컬럼 정의 생성
-  const columns = useResultColumns(data, queryResult?.columns);
+  const columns = useResultColumns(data, columnNames);
 
   // TanStack Table 인스턴스 생성
   const table = useReactTable({
@@ -110,7 +123,6 @@ export default function ResultsTable() {
                     >
                       {header.isPlaceholder ? null : (
                         <div
-                          onMouseDown={header.getResizeHandler()}
                           className={cn(
                             header.column.getCanSort()
                               ? "flex items-center gap-2 cursor-pointer select-none hover:text-primary transition-colors"
@@ -222,7 +234,7 @@ export default function ResultsTable() {
                             "max-w-md truncate" // 긴 텍스트 자동 말줄임
                         )}
                         title={
-                          // 말줄임표 처리된 경우 전체 내용을 툴팁으로 표시
+                          // 말줄임표 처리될 경우 전체 내용을 툴팁으로 표시
                           !isNumber &&
                           !isBoolean &&
                           !isBlob &&
