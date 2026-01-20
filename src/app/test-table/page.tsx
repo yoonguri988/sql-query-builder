@@ -1,9 +1,10 @@
 // src/app/test-table/page.tsx
 "use client";
 
-import { ResultsTable } from "@/components/results/ResultsTable";
+import ResultsTable from "@/components/results/ResultsTable";
 import { useQueryStore } from "@/store/query-store";
 import { Button } from "@/components/ui/button";
+import LoadingResults from "@/components/results/LoadingResults";
 
 /**
  * ResultsTable 컴포넌트를 테스트하기 위한 페이지
@@ -11,16 +12,25 @@ import { Button } from "@/components/ui/button";
 export default function TestTablePage() {
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const setSelectedTable = useQueryStore((state) => state.setSelectedTable);
-  const setSelectedColumns = useQueryStore((state) => state.setSelectedColumns);
   const addWhereCondition = useQueryStore((state) => state.addWhereCondition);
   const generateSQL = useQueryStore((state) => state.generateSQL);
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const queryResult = useQueryStore((state) => state.queryResult);
   const executionTime = useQueryStore((state) => state.executionTime);
 
-  // 샘플 데이터로 결과 설정
+  const loadingData = () => {
+    setSelectedTable("products");
+    // executeQuery();
+  };
+  // 에러 상태 설정
   const loadSampleData = () => {
     setSelectedTable("products");
+    addWhereCondition({
+      id: "cond-1",
+      column: "name",
+      operator: "<",
+      value: "",
+    });
     executeQuery();
   };
 
@@ -45,8 +55,7 @@ export default function TestTablePage() {
 
   // 실제 쿼리 실행 (DB가 초기화되어 있어야 함)
   const runRealQuery = async () => {
-    setSelectedTable("users");
-    setSelectedColumns(["id", "name", "email", "country"]);
+    setSelectedTable("order_items");
     generateSQL();
     await executeQuery();
   };
@@ -56,14 +65,17 @@ export default function TestTablePage() {
       <h1 className="text-3xl font-bold mb-6">Results Table Test</h1>
 
       <div className="flex gap-4 mb-6">
+        <Button onClick={loadingData} variant="outline">
+          로딩 처리
+        </Button>
         <Button onClick={loadSampleData} variant="outline">
-          Load Sample Data
+          SQL 문법 오류
         </Button>
         <Button onClick={loadEmptyData} variant="outline">
-          Load Empty Data
+          빈 데이터 처리
         </Button>
         <Button onClick={runRealQuery} variant="default">
-          Run Real Query (Users Table)
+          실제 데이터 처리
         </Button>
       </div>
 
@@ -81,6 +93,8 @@ export default function TestTablePage() {
       )}
 
       <ResultsTable />
+
+      {<LoadingResults />}
     </div>
   );
 }
