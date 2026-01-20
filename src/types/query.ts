@@ -66,6 +66,10 @@ export interface QueryState {
   queryResult: TransformedQueryResult | null; // 이미 변환된 형태 사용
   // 실행 메타 데이터
   executionMetadata: ExecutionMetadata | null; // 이름 변경 및 타입 명확화
+
+  // 하위 호환성
+  executionTime: number | null;
+  error: string | null;
 }
 
 // SQL.js에서 반환하는 원시 데이터
@@ -96,7 +100,7 @@ export interface QueryHistoryItem {
   executionTime: number;
   rowCount: number;
   // 히스토리 타입 확장
-  status: "success" | "error";
+  status: "success" | "error" | "idle";
   error?: string;
   queryState?: QueryState; // 쿼리 빌더 상태 저장
 }

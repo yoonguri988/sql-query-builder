@@ -4,8 +4,10 @@ import {
   WhereCondition,
   OrderByClause,
   QueryHistoryItem,
+  ExecutionResult,
+  ExecutionMetadata,
 } from "@/types/query";
-import { executeQuery as dbExecuteQuery, initDatabase } from "@/lib/db/init-db";
+import { executeQueryWithMetadata, initDatabase } from "@/lib/db/init-db";
 import validateQueryState from "@/lib/query/validateQueryState";
 import { escapeSQLString } from "@/lib/utils";
 import { SQLExecutionError } from "@/lib/db/sql-errors";
@@ -43,12 +45,11 @@ interface QueryStore extends QueryState {
   // DB 초기화 액션
   initDB: () => Promise<void>;
 
-  // 쿼리 실행 (기존)
-  executeQuery: () => Promise<void>;
+  // 쿼리 실행
+  executeQuery: () => Promise<ExecutionResult | null>;
 
   // 리셋
   reset: () => void;
-  // 초기화 액션들
   resetExecution: () => void;
   resetAll: () => void;
   resetWhereConditions: () => void;
@@ -67,6 +68,7 @@ const initialState: QueryState = {
   limit: 100,
   generatedSQL: "",
   queryResult: null,
+  executionMetadata: null,
   executionTime: null,
   error: null,
 };
@@ -253,7 +255,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
     set({ generatedSQL: sql });
   },
 
-  // 쿼리 실행 (SQL.js 통합 예정)
+  // 쿼리 실행
   executeQuery: async () => {
     const state = get();
 
@@ -261,63 +263,49 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       set({
         error: "SQL 쿼리가 생성되지 않았습니다.",
         queryResult: null,
+        executionMetadata: null,
       });
-      return;
+      return null;
     }
 
-    // DB 초기화 체크 (자동 초기화)
+    // DB 초기화 체크
     if (!state.isDbInitialized) {
-      console.log("DB 미초기화 상태. 자동 초기화 실행...");
       await get().initDB();
     }
 
-    // 실행 시작 - isExecuting true
+    // 실행 시작
     set({
       isExecuting: true,
       error: null,
       queryResult: null,
+      executionMetadata: null,
       executionTime: null,
     });
 
     try {
-      console.log("SQL 실행 시작:", state.generatedSQL);
+      // executeQueryWithMetadata 사용
+      const result = await executeQueryWithMetadata(state.generatedSQL);
 
-      const startTime = performance.now();
-
-      // await 추가 - 매우 중요!
-      const result = await dbExecuteQuery(state.generatedSQL);
-
-      const endTime = performance.now();
-      const executionTime = Math.round(endTime - startTime);
-
-      console.log("SQL 실행 완료:", {
-        rowCount: result.rowCount,
-        executionTime: `${executionTime}ms`,
-      });
-
-      // 결과 저장 + isExecuting false
+      // 결과 저장
       set({
-        queryResult: result,
-        executionTime,
-        error: null,
+        queryResult: result.data,
+        executionMetadata: result.metadata,
+        executionTime: result.metadata.executionTime,
+        error:
+          result.metadata.status === "error"
+            ? result.metadata.error || null
+            : null,
         isExecuting: false,
       });
 
-      // 히스토리에 추가
-      get().addToHistory({
-        id: Date.now().toString(),
-        sql: state.generatedSQL,
-        timestamp: new Date(),
-        executionTime,
-        rowCount: result.rowCount,
-      });
+      // ExecutionResult 반환
+      return result;
     } catch (e) {
       let errorMessage = "쿼리 실행 중 오류가 발생했습니다.";
 
       if (e instanceof SQLExecutionError) {
         errorMessage = e.getUserMessage();
 
-        // 개발 모드에서 콘솔에 상세 정보 출력
         if (process.env.NODE_ENV === "development") {
           console.error(e.getDebugInfo());
         }
@@ -325,13 +313,31 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         errorMessage = e.message;
       }
 
+      // 에러 메타데이터 생성
+      const errorMetadata: ExecutionMetadata = {
+        executionTime: 0,
+        rowCount: 0,
+        status: "error",
+        error: errorMessage,
+        timestamp: new Date(),
+      };
+
       set({
         error: errorMessage,
         isExecuting: false,
         queryResult: null,
+        executionMetadata: errorMetadata,
+        executionTime: 0,
       });
+
+      // 에러 결과도 ExecutionResult 형태로 반환
+      return {
+        data: { columns: [], data: [], rowCount: 0 },
+        metadata: errorMetadata,
+      };
     }
   },
+
   // DB 초기화 함수
   initDB: async () => {
     // 이미 초기화됨
@@ -392,8 +398,14 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
   },
   // 쿼리 히스토리
   addToHistory: (item) => {
+    const newItem: QueryHistoryItem = {
+      ...item,
+      id: `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      timestamp: new Date(),
+    };
+
     set((state) => ({
-      queryHistory: [item, ...state.queryHistory].slice(0, 20), // 최대 20개
+      queryHistory: [newItem, ...state.queryHistory].slice(0, 20),
     }));
   },
 

@@ -105,8 +105,6 @@ export async function executeQueryWithMetadata(
 
   // 빈 쿼리 체크
   if (!sql || sql.trim() === "") {
-    const executionTime = Math.round(performance.now() - startTime);
-
     throw new SQLExecutionError(
       "SQL 쿼리가 비어있습니다.",
       SQLErrorCode.VALIDATION
@@ -118,8 +116,6 @@ export async function executeQueryWithMetadata(
     const database = getDatabase();
 
     if (!database) {
-      const executionTime = Math.round(performance.now() - startTime);
-
       throw new SQLExecutionError(
         "데이터베이스가 초기화되지 않았습니다.",
         SQLErrorCode.DATABASE
@@ -132,7 +128,6 @@ export async function executeQueryWithMetadata(
       result = database.exec(sql);
     } catch (sqlError) {
       // SQL.js 에러를 커스텀 에러로 변환
-      const executionTime = Math.round(performance.now() - startTime);
       throw parseSQLjsError(sqlError as Error);
     }
 

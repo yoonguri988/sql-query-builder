@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { Database, QueryExecResult } from "sql.js";
+import { Database } from "sql.js";
 import { TableSchema } from "@/types/database";
 import { executeQueryWithMetadata, initDatabase } from "@/lib/db/init-db";
 import { DATABASE_SCHEMA } from "@/types/schema";

@@ -1,45 +1,45 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 import { QueryHistoryItem } from "@/types/query";
 
-interface HistoryStore {
+interface HistoryState {
   history: QueryHistoryItem[];
-  maxHistorySize: number;
-
-  // 액션
-  addToHistory: (item: Omit<QueryHistoryItem, "id">) => void;
+  addHistory: (item: Omit<QueryHistoryItem, "id" | "timestamp">) => void;
   clearHistory: () => void;
   removeHistoryItem: (id: string) => void;
+  getHistoryById: (id: string) => QueryHistoryItem | undefined;
 }
 
-export const useHistoryStore = create<HistoryStore>((set) => ({
-  history: [],
-  maxHistorySize: 50,
+export const useHistoryStore = create<HistoryState>()(
+  persist(
+    (set, get) => ({
+      history: [],
 
-  addToHistory: (item) => {
-    set((state) => {
-      const newItem: QueryHistoryItem = {
-        ...item,
-        id: crypto.randomUUID(),
-      };
+      addHistory: (item) => {
+        const newItem: QueryHistoryItem = {
+          ...item,
+          id: `query_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          timestamp: new Date(),
+        };
 
-      const updatedHistory = [newItem, ...state.history];
+        set((state) => ({
+          history: [newItem, ...state.history].slice(0, 50), // 최대 50개 유지
+        }));
+      },
 
-      // 최대 크기 제한
-      if (updatedHistory.length > state.maxHistorySize) {
-        updatedHistory.pop();
-      }
+      clearHistory: () => set({ history: [] }),
 
-      return { history: updatedHistory };
-    });
-  },
+      removeHistoryItem: (id) =>
+        set((state) => ({
+          history: state.history.filter((item) => item.id !== id),
+        })),
 
-  clearHistory: () => {
-    set({ history: [] });
-  },
-
-  removeHistoryItem: (id) => {
-    set((state) => ({
-      history: state.history.filter((item) => item.id !== id),
-    }));
-  },
-}));
+      getHistoryById: (id) => {
+        return get().history.find((item) => item.id === id);
+      },
+    }),
+    {
+      name: "query-history-storage",
+    }
+  )
+);
