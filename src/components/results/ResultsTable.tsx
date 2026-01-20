@@ -25,6 +25,9 @@ import { useMemo, useState } from "react";
 import SortingIcon from "./SortingIcon";
 import PaginationControls from "./PaginationControls";
 import { cn } from "@/lib/utils";
+import LoadingResults from "@/components/results/LoadingResults";
+import ErrorResults from "@/components/results/ErrorResults";
+import EmptyResults from "@/components/results/EmptyResults";
 
 /**
  * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
@@ -37,6 +40,8 @@ export default function ResultsTable() {
     pageIndex: 0, // 첫 페이지
     pageSize: 10, // 기본 10개씩
   });
+  // 선택 상태
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // 동적으로 컬럼 정의 생성
   const { queryResult, isExecuting, error } = useQueryStore();
@@ -79,107 +84,167 @@ export default function ResultsTable() {
   });
 
   // 로딩 상태
-  if (isExecuting) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Executing query...</p>
-        </div>
-      </div>
-    );
-  }
-
+  if (isExecuting) return <LoadingResults />;
   // 에러 상태
-  if (error) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center text-red-600">
-          <svg
-            className="w-12 h-12 mx-auto mb-4"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-            />
-          </svg>
-          <p className="text-lg font-medium">Query Error</p>
-          <p className="text-sm mt-2 text-gray-600">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
+  if (error) return <ErrorResults error={error} />;
   // 빈 데이터 처리
-  if (!data || data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64 text-gray-500">
-        <div className="text-center">
-          <p className="text-lg font-medium">No results found</p>
-          <p className="text-sm mt-2">Execute a query to see results here</p>
-        </div>
-      </div>
-    );
-  }
+  if (!data || data.length === 0) return <EmptyResults />;
 
   // 테이블 렌더링
   return (
-    <div className="w-full space-y-4">
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader className="sticky top-0 bg-background z-10">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="font-semibold">
-                    {header.isPlaceholder ? null : (
-                      <div
-                        className={
-                          header.column.getCanSort()
-                            ? "flex items-center space-x-2 cursor-pointer select-none"
-                            : ""
+    <div className="w-full h-full flex flex-col">
+      {/* 스크롤 가능한 테이블 컨테이너 */}
+      <div className="flex-1 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
+        <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-420px)]">
+          <Table>
+            <TableHeader className="sticky top-0 z-10 bg-muted/95 backdrop-blur supports-[backdrop-filter]:bg-muted/60">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow
+                  key={headerGroup.id}
+                  className="border-b border-border hover:bg-transparent"
+                >
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className="font-semibold text-foreground h-12 px-4 relative group"
+                    >
+                      {header.isPlaceholder ? null : (
+                        <div
+                          onMouseDown={header.getResizeHandler()}
+                          className={cn(
+                            header.column.getCanSort()
+                              ? "flex items-center gap-2 cursor-pointer select-none hover:text-primary transition-colors"
+                              : "flex items-center gap-2"
+                          )}
+                          onClick={header.column.getToggleSortingHandler()}
+                          role={
+                            header.column.getCanSort() ? "button" : undefined
+                          }
+                          aria-label={
+                            header.column.getCanSort()
+                              ? `Sort by ${header.column.columnDef.header}`
+                              : undefined
+                          }
+                          tabIndex={header.column.getCanSort() ? 0 : undefined}
+                          onKeyDown={(e) => {
+                            if (
+                              header.column.getCanSort() &&
+                              (e.key === "Enter" || e.key === " ")
+                            ) {
+                              e.preventDefault();
+                              header.column.toggleSorting();
+                            }
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {header.column.getCanSort() && (
+                            <SortingIcon
+                              isSorted={header.column.getIsSorted()}
+                            />
+                          )}
+                        </div>
+                      )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                  onClick={() => {
+                    const newSelected = new Set(selectedRows);
+                    if (newSelected.has(row.id)) {
+                      newSelected.delete(row.id);
+                    } else {
+                      newSelected.add(row.id);
+                    }
+                    setSelectedRows(newSelected);
+                  }}
+                  className={cn(
+                    // 기본 스타일
+                    "border-b border-border/50 transition-all duration-150 cursor-default",
+                    // Zebra Striping - 짝수/홀수 행 구분
+                    row.index % 2 === 0 ? "bg-background" : "bg-muted/20",
+                    // Hover 효과 - 마우스 오버 시 강조 + 미묘한 그림자
+                    "hover:bg-muted/50 hover:shadow-[inset_0_1px_0_0_rgba(0,0,0,0.05)]",
+                    // 선택된 행 스타일
+                    selectedRows.has(row.id) &&
+                      "bg-primary/5 border-l-4 border-l-primary hover:bg-primary/10"
+                  )}
+                >
+                  {row.getVisibleCells().map((cell) => {
+                    const value = cell.getValue() as CellValue;
+
+                    // 데이터 타입 확인
+                    const isNumber = typeof value === "number";
+                    const isNull = value === null || value === undefined;
+                    const isBoolean = typeof value === "boolean";
+                    const isBlob = value instanceof Uint8Array;
+                    const isFirstColumn = cell.column.getIndex() === 0;
+
+                    return (
+                      <TableCell
+                        key={cell.id}
+                        className={cn(
+                          // 기본 패딩 및 크기
+                          "px-4 py-3 text-sm",
+                          // 부드러운 트랜지션
+                          "transition-colors duration-150",
+
+                          // 데이터 타입별 정렬
+                          isNumber && "text-right font-mono tabular-nums",
+                          !isNumber &&
+                            !isNull &&
+                            !isBoolean &&
+                            !isBlob &&
+                            "text-left",
+
+                          // NULL 값은 중앙 정렬
+                          isNull && "text-center",
+
+                          // Boolean과 BLOB는 중앙 정렬
+                          (isBoolean || isBlob) && "text-center",
+
+                          // 첫 번째 컬럼 강조 (보통 ID나 Primary Key)
+                          isFirstColumn && "font-medium text-foreground/90",
+
+                          // 긴 텍스트 처리
+                          !isNumber &&
+                            !isBoolean &&
+                            !isBlob &&
+                            !isNull &&
+                            "max-w-md truncate" // 긴 텍스트 자동 말줄임
+                        )}
+                        title={
+                          // 말줄임표 처리된 경우 전체 내용을 툴팁으로 표시
+                          !isNumber &&
+                          !isBoolean &&
+                          !isBlob &&
+                          !isNull &&
+                          typeof value === "string" &&
+                          value.length > 50
+                            ? String(value)
+                            : undefined
                         }
-                        onClick={header.column.getToggleSortingHandler()}
                       >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {header.column.getCanSort() && (
-                          <SortingIcon isSorted={header.column.getIsSorted()} />
-                        )}
-                      </div>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                className={cn(
-                  "hover:bg-muted/50 transition-colors",
-                  row.index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
-                )}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {formatCellValue(cell.getValue() as CellValue)}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+                        {formatCellValue(value)}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
+
+      {/* 페이지네이션 */}
       <PaginationControls table={table} />
     </div>
   );
