@@ -1,16 +1,33 @@
 "use client";
 
-import { X } from "lucide-react";
+import { Code, Database, X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
-import { Button } from "../ui/button";
 import SQLPreview from "@/components/sql-preview/SQLPreview";
 import ExecutionInfo from "@/components/sql-preview/ExecutionInfo";
+// import { useDBStore } from "@/store/db-store";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DownloadButton } from "@/components/results/DownloadButton";
+import { useQueryStore } from "@/store/query-store";
 
 export default function RightPanel({
   isOpen,
   onClose,
   isDark,
 }: RightPanelProps) {
+  // query-store에서 가져오기
+  const queryResult = useQueryStore((state) => state.queryResult);
+  const executionMetadata = useQueryStore((state) => state.executionMetadata);
+  const isExecuting = useQueryStore((state) => state.isExecuting);
+
+  // ExecutionResult 형태로 재구성
+  const queryResults =
+    queryResult && executionMetadata
+      ? {
+          data: queryResult,
+          metadata: executionMetadata,
+        }
+      : null;
   return (
     <aside
       className={`
@@ -32,34 +49,86 @@ export default function RightPanel({
         </Button>
       </div>
 
-      {/* 🆕 스크롤 가능한 컨텐츠 영역 */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-6 custom-scrollbar">
-        {/* SQL 프리뷰 섹션 */}
-        <section>
-          <div className="flex items-center gap-2 mb-3">
-            <svg
-              className="h-4 w-4 text-primary"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M10 21h7a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v11m0 5l4.879-4.879m0 0a3 3 0 104.243-4.242 3 3 0 00-4.243 4.242z"
-              />
-            </svg>
-            <h3 className="text-sm font-semibold">SQL Preview</h3>
-          </div>
+      {/* 스크롤 가능한 컨텐츠 영역 */}
+      {/* <div className="flex-1 overflow-y-auto custom-scrollbar"> */}
+      <div className="flex-1 custom-scrollbar">
+        <Tabs defaultValue="sql" className="h-full flex flex-col">
+          <TabsList className="grid w-full grid-cols-2 m-4 mb-0">
+            <TabsTrigger value="sql" className="gap-2">
+              <Code className="h-4 w-4" />
+              SQL Preview
+            </TabsTrigger>
+            <TabsTrigger value="results" className="gap-2">
+              <Database className="h-4 w-4" />
+              Results
+            </TabsTrigger>
+          </TabsList>
 
-          <SQLPreview isDark={isDark} />
-        </section>
+          {/* SQL Preview 탭 */}
+          <TabsContent value="sql" className="flex-1 overflow-auto p-4 m-0">
+            <SQLPreview isDark={isDark} />
+          </TabsContent>
 
-        {/* 실행 정보 섹션 (19일차 구현 예정) */}
-        <section>
-          <ExecutionInfo />
-        </section>
+          {/* Results 탭 */}
+          <TabsContent value="results" className="flex-1 overflow-auto p-4 m-0">
+            {isExecuting ? (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+                  <p className="text-muted-foreground">Executing query...</p>
+                </div>
+              </div>
+            ) : queryResults ? (
+              <div className="space-y-4">
+                {/* Execution Info */}
+                <ExecutionInfo metadata={queryResults.metadata} />
+
+                {/* Download Button */}
+                {queryResults.metadata.status === "success" && (
+                  <div className="flex justify-end">
+                    <DownloadButton data={queryResults.data.data} />
+                  </div>
+                )}
+
+                {/* Results Table Placeholder */}
+                {queryResults.metadata.status === "success" && (
+                  <div className="border rounded-md p-4">
+                    <p className="text-sm text-muted-foreground text-center">
+                      결과 출력 기능은 다음 업데이트 시 도입될 예정입니다.
+                    </p>
+                    <p className="text-xs text-muted-foreground text-center mt-2">
+                      {queryResults.data.data.length} rows loaded
+                    </p>
+                  </div>
+                )}
+
+                {/* Error State */}
+                {queryResults.metadata.status === "error" && (
+                  <div className="border border-destructive rounded-md p-4">
+                    <p className="text-sm text-destructive font-medium">
+                      Query Error
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-2">
+                      {queryResults.metadata.error || "Unknown error occurred"}
+                    </p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  <Database className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">
+                    아직 쿼리 결과가 없습니다.
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    쿼리를 실행하여 결과를 확인하세요.
+                  </p>
+                </div>
+              </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </div>
     </aside>
   );
