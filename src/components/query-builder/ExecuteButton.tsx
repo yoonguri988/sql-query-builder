@@ -30,7 +30,14 @@ export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
       toast({
         variant: "destructive",
         title: "쿼리 없음",
-        description: "실행할 SQL 쿼리가 없습니다.",
+        description: (
+          <div className="space-y-1">
+            <p className="font-medium">실행할 SQL 쿼리가 없습니다</p>
+            <p className="text-xs text-muted-foreground">
+              왼쪽에서 테이블과 컬럼을 선택하세요
+            </p>
+          </div>
+        ),
       });
       return;
     }
@@ -44,7 +51,12 @@ export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
         toast({
           variant: "destructive",
           title: "실행 실패",
-          description: "쿼리 실행 중 오류가 발생했습니다.",
+          description: (
+            <div className="space-y-1">
+              <p className="font-medium">쿼리 실행 중 오류가 발생했습니다</p>
+              <p className="text-xs text-muted-foreground">다시 시도해주세요</p>
+            </div>
+          ),
         });
         return;
       }
@@ -62,18 +74,36 @@ export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
 
       // 성공/에러 상태에 따른 Toast 알림
       if (metadata.status === "success") {
-        // ⭐ Results 탭으로 자동 전환
+        // Results 탭으로 자동 전환
         onExecute?.();
 
         toast({
           title: "쿼리 실행 성공",
-          description: `${metadata.rowCount}개의 행이 반환되었습니다. (${metadata.executionTime}ms)`,
+          description: (
+            <div className="space-y-1">
+              <p className="font-medium">
+                {metadata.rowCount}개의 행이 반환되었습니다
+              </p>
+              <p className="text-xs text-muted-foreground">
+                실행 시간: {metadata.executionTime}ms
+              </p>
+            </div>
+          ),
         });
       } else if (metadata.status === "error") {
         toast({
           variant: "destructive",
           title: "쿼리 실행 실패",
-          description: metadata.error || "알 수 없는 오류가 발생했습니다.",
+          description: (
+            <div className="space-y-1">
+              <p className="font-medium">
+                {metadata.error || "알 수 없는 오류가 발생했습니다"}
+              </p>
+              <p className="text-xs text-muted-foreground">
+                SQL 문법을 확인하고 다시 시도해주세요
+              </p>
+            </div>
+          ),
         });
       }
     } catch (err) {
@@ -84,7 +114,14 @@ export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
       toast({
         variant: "destructive",
         title: "실행 중 오류 발생",
-        description: errorMessage,
+        description: (
+          <div className="space-y-1">
+            <p className="font-medium">{errorMessage}</p>
+            <p className="text-xs text-muted-foreground">
+              문제가 지속되면 페이지를 새로고침해주세요
+            </p>
+          </div>
+        ),
       });
     }
   };
