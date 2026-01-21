@@ -4,12 +4,15 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MainContentProps } from "@/types/layout";
 import QueryBuilder from "@/components/query-builder/QueryBuilder";
 import ResultsTable from "@/components/results/ResultsTable";
+import LoadingResults from "@/components/results/LoadingResults";
+import ErrorResults from "@/components/results/ErrorResults";
+import EmptyResults from "@/components/results/EmptyResults";
 import { useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 
 export default function MainContent({ isRightPanelOpen }: MainContentProps) {
   const [activeTab, setActiveTab] = useState<string>("builder");
-  const { queryResult } = useQueryStore();
+  const { queryResult, isExecuting, error } = useQueryStore();
 
   // 쿼리 결과가 생성되면 자동으로 Results 탭으로 전환
   useEffect(() => {
@@ -48,6 +51,11 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
             className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
           >
             📋 Results
+            {queryResult && queryResult.rowCount > 0 && (
+              <span className="ml-2 text-xs text-muted-foreground">
+                ({queryResult.rowCount})
+              </span>
+            )}
           </TabsTrigger>
           <TabsTrigger
             value="visualization"
@@ -62,9 +70,7 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
           <TabsContent value="builder" className="p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
               <h2 className="text-2xl font-bold">Query Builder</h2>
-              {/* Query Builder 폼 내용 */}
               <div className="text-muted-foreground">
-                {/* Query Builder 컴포넌트가 여기에 렌더링됩니다. */}
                 <QueryBuilder />
               </div>
             </div>
@@ -84,10 +90,33 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
           <TabsContent value="results" className="p-4 md:p-6">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Query Results</h2>
-              <div className="text-muted-foreground">
-                {/* Results 테이블이 여기에 렌더링됩니다. */}
-                <ResultsTable />
-              </div>
+
+              {/* 로딩 상태 */}
+              {isExecuting && <LoadingResults />}
+
+              {/* 에러 상태 */}
+              {!isExecuting && error && <ErrorResults error={error} />}
+
+              {/* 빈 결과 (아직 실행 안 함) */}
+              {!isExecuting && !error && !queryResult && (
+                <EmptyResults message="쿼리를 실행하여 결과를 확인하세요." />
+              )}
+
+              {/* 빈 결과 (실행 성공했지만 데이터 없음) */}
+              {!isExecuting &&
+                !error &&
+                queryResult &&
+                queryResult.rowCount === 0 && (
+                  <EmptyResults message="쿼리가 성공적으로 실행되었지만 결과가 없습니다." />
+                )}
+
+              {/* 결과 테이블 */}
+              {!isExecuting &&
+                !error &&
+                queryResult &&
+                queryResult.rowCount > 0 && (
+                  <ResultsTable data={queryResult.data} />
+                )}
             </div>
           </TabsContent>
 
