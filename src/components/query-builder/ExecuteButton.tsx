@@ -6,10 +6,14 @@ import { useQueryStore } from "@/store/query-store";
 import { useToast } from "@/hooks/use-toast";
 import { useHistoryStore } from "@/store/history-store";
 
+interface ExecuteButtonProps {
+  onExecute?: () => void; // Results 탭 활성화 콜백
+}
+
 /**
  * SQL 실행 버튼 컴포넌트
  */
-export default function ExecuteButton() {
+export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
   const { toast } = useToast();
 
   // Query Store
@@ -58,14 +62,13 @@ export default function ExecuteButton() {
 
       // 성공/에러 상태에 따른 Toast 알림
       if (metadata.status === "success") {
+        // ⭐ Results 탭으로 자동 전환
+        onExecute?.();
+
         toast({
           title: "쿼리 실행 성공",
           description: `${metadata.rowCount}개의 행이 반환되었습니다. (${metadata.executionTime}ms)`,
         });
-
-        // ⭐ Results 탭으로 자동 전환 (옵션)
-        // 이 부분은 RightPanel에서 관리할 수도 있습니다
-        // 여기서는 이벤트를 발생시키거나 전역 상태로 관리할 수 있습니다
       } else if (metadata.status === "error") {
         toast({
           variant: "destructive",
