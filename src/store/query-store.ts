@@ -431,6 +431,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       isExecuting: false,
       generatedSQL: "",
       error: null,
+      queryHistory: [],
     });
   },
   // 쿼리 히스토리
