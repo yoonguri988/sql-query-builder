@@ -13,7 +13,7 @@ import { escapeSQLString } from "@/lib/utils";
 import { SQLExecutionError } from "@/lib/db/sql-errors";
 import { toast } from "@/hooks/use-toast";
 
-interface QueryStore extends QueryState {
+export interface QueryStore extends QueryState {
   // FROM 액션
   setSelectedTable: (table: string) => void;
 
