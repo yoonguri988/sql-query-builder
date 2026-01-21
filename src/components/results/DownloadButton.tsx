@@ -11,7 +11,7 @@ interface DownloadButtonProps {
   disabled?: boolean;
 }
 
-export function DownloadButton({
+export default function DownloadButton({
   data,
   filename,
   disabled = false,
