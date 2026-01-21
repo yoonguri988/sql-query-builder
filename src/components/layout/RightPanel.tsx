@@ -48,7 +48,7 @@ export default function RightPanel({
         md:${isOpen ? "block" : "hidden"}
         lg:block
         fixed lg:static inset-y-0 right-0 z-40
-        w-full md:w-96 lg:w-[500px]
+        w-full md:w-96 lg:w-[500px] xl:w-[600px]
         bg-background border-l
         flex flex-col
         overflow-hidden
