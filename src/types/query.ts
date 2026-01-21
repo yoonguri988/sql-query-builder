@@ -109,7 +109,7 @@ export interface QueryHistoryItem {
 export interface ExecutionMetadata {
   executionTime: number; // milliseconds
   rowCount: number;
-  status: "success" | "error" | "idle";
+  status: "success" | "error";
   error?: string;
   timestamp: Date;
 }

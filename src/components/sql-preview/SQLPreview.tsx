@@ -5,6 +5,7 @@
  * - 생성된 SQL을 Syntax Highlighting하여 표시
  * - 에러가 있으면 에러 메시지 표시
  * - SQL이 없으면 안내 메시지 표시
+ * - ExecuteButton을 포함하여 쿼리 실행 가능
  */
 
 import { useQueryStore } from "@/store/query-store";
@@ -18,20 +19,17 @@ import { Button } from "@/components/ui/button";
 import { Copy, Check } from "lucide-react";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useToast } from "@/hooks/use-toast";
-
-/**
- * SQL 프리뷰 컴포넌트
- * - Props로 다크모드 상태를 받음
- * - 생성된 SQL을 Syntax Highlighting하여 표시
- * - 에러가 있으면 에러 메시지 표시
- * - SQL이 없으면 안내 메시지 표시
- */
+import ExecuteButton from "@/components/query-builder/ExecuteButton";
 
 interface SQLPreviewProps {
   isDark?: boolean; // 다크모드 상태
+  onExecute?: () => void; // Results 탭 활성화 콜백
 }
 
-export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
+export default function SQLPreview({
+  isDark = false,
+  onExecute,
+}: SQLPreviewProps) {
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const error = useQueryStore((state) => state.error);
 
@@ -66,7 +64,7 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
     }
   };
 
-  // 에러 상태 (기존 코드 유지)
+  // 에러 상태
   if (error) {
     return (
       <div className="p-4 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-lg">
@@ -97,7 +95,7 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
     );
   }
 
-  // SQL이 없는 상태 (기존 코드 유지)
+  // SQL이 없는 상태
   if (!generatedSQL) {
     return (
       <div className="p-8 text-center border-2 border-dashed rounded-lg">
@@ -124,12 +122,11 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
     );
   }
 
-  // 정상 상태: 복사 버튼 추가
+  // 정상 상태: SQL 표시 및 복사/실행 버튼
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-sm font-semibold">생성된 SQL</h3>
-        {/* 수정: "유효" 뱃지와 복사 버튼을 함께 */}
         <div className="flex items-center gap-2">
           <span className="inline-flex items-center px-2 py-1 rounded-md bg-green-100 dark:bg-green-950 text-xs font-medium text-green-700 dark:text-green-300">
             <svg
@@ -168,7 +165,7 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
         </div>
       </div>
 
-      {/* Syntax Highlighting (기존 코드 유지) */}
+      {/* Syntax Highlighting */}
       <div className="relative">
         <SyntaxHighlighter
           language="sql"
@@ -187,12 +184,15 @@ export default function SQLPreview({ isDark = false }: SQLPreviewProps) {
           {generatedSQL}
         </SyntaxHighlighter>
 
-        {/* SQL 줄 수 표시 (기존 코드 유지) */}
+        {/* SQL 줄 수 표시 */}
         <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
           <span>{generatedSQL.split("\n").length} 줄</span>
           <span>{generatedSQL.length} 문자</span>
         </div>
       </div>
+
+      {/* Execute 버튼 */}
+      <ExecuteButton onExecute={onExecute} />
     </div>
   );
 }

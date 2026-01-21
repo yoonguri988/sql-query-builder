@@ -1,15 +1,10 @@
 "use client";
 
 import { ExecutionMetadata } from "@/types/query";
-import {
-  Clock,
-  Database,
-  CheckCircle2,
-  XCircle,
-  AlertCircle,
-} from "lucide-react";
+import { Clock, Database, CheckCircle2, XCircle } from "lucide-react";
 import { Card } from "../ui/card";
 import { Badge } from "../ui/badge";
+import { formatDistanceToNow } from "date-fns";
 
 interface ExecutionInfoProps {
   metadata: ExecutionMetadata;
@@ -19,29 +14,18 @@ interface ExecutionInfoProps {
  * SQL 실행 정보 표시 컴포넌트
  */
 export default function ExecutionInfo({ metadata }: ExecutionInfoProps) {
-  const { executionTime, rowCount, status, error } = metadata;
+  const { executionTime, rowCount, status, error, timestamp } = metadata;
 
   const statusConfig = {
     success: {
       icon: CheckCircle2,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
       label: "Success",
       variant: "default" as const,
     },
     error: {
       icon: XCircle,
-      color: "text-red-600",
-      bgColor: "bg-red-50",
       label: "Error",
       variant: "destructive" as const,
-    },
-    idle: {
-      icon: AlertCircle,
-      color: "text-gray-600",
-      bgColor: "bg-gray-50",
-      label: "Idle",
-      variant: "secondary" as const,
     },
   };
 
@@ -49,7 +33,7 @@ export default function ExecutionInfo({ metadata }: ExecutionInfoProps) {
   const StatusIcon = config.icon;
 
   return (
-    <Card className="p-4 mb-4">
+    <Card className="p-4">
       <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Status Badge */}
         <div className="flex items-center gap-2">
@@ -68,22 +52,31 @@ export default function ExecutionInfo({ metadata }: ExecutionInfoProps) {
           </div>
 
           {/* Row Count */}
-          <div className="flex items-center gap-2">
-            <Database className="h-4 w-4 text-muted-foreground" />
-            <span className="font-medium">
-              {rowCount} {rowCount === 1 ? "row" : "rows"}
-            </span>
-          </div>
+          {status === "success" && (
+            <div className="flex items-center gap-2">
+              <Database className="h-4 w-4 text-muted-foreground" />
+              <span className="font-medium">
+                {rowCount} {rowCount === 1 ? "row" : "rows"}
+              </span>
+            </div>
+          )}
+
+          {/* Timestamp */}
+          {timestamp && (
+            <div className="text-xs text-muted-foreground">
+              {formatDistanceToNow(timestamp, { addSuffix: true })}
+            </div>
+          )}
         </div>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-sm text-red-800 font-medium mb-1">
-            Error Details:
+        <div className="mt-3 p-3 bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded-md">
+          <p className="text-sm text-red-800 dark:text-red-200 font-medium mb-1">
+            오류 상세 정보
           </p>
-          <p className="text-sm text-red-700">{error}</p>
+          <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
         </div>
       )}
     </Card>

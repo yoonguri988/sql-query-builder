@@ -19,20 +19,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatCellValue } from "@/lib/helper";
-import { useQueryStore } from "@/store/query-store";
 import useResultColumns from "@/hooks/useResultColumns";
 import { useMemo, useState } from "react";
 import SortingIcon from "./SortingIcon";
 import PaginationControls from "./PaginationControls";
 import { cn } from "@/lib/utils";
-import LoadingResults from "@/components/results/LoadingResults";
-import ErrorResults from "@/components/results/ErrorResults";
-import EmptyResults from "@/components/results/EmptyResults";
+
+interface ResultsTableProps {
+  data: Record<string, unknown>[];
+}
 
 /**
  * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
  */
-export default function ResultsTable() {
+export default function ResultsTable({ data: rawData }: ResultsTableProps) {
   // 정렬 상태 관리
   const [sorting, setSorting] = useState<SortingState>([]);
   // 페이지네이션 상태
@@ -43,36 +43,21 @@ export default function ResultsTable() {
   // 선택 상태
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
-  // 스토어에서 데이터 가져오기
-  const { queryResult, isExecuting, error, executeQuery } = useQueryStore();
-
   // 올바른 데이터 구조로 변환
   const data: TableData[] = useMemo(() => {
-    // queryResult가 없거나 data 배열이 없으면 빈 배열 반환
-    if (!queryResult || !queryResult.data || queryResult.data.length === 0) {
+    if (!rawData || rawData.length === 0) {
       return [];
     }
-
-    // queryResult.data가 이미 객체 배열 형태라면 그대로 사용
-    // TransformedQueryResult의 data는 이미 { [key: string]: CellValue }[] 형태
-    return queryResult.data as TableData[];
-  }, [queryResult]);
+    return rawData as TableData[];
+  }, [rawData]);
 
   // columns 추출 (첫 번째 데이터 객체의 키 사용)
   const columnNames = useMemo(() => {
-    if (
-      !queryResult ||
-      !queryResult.columns ||
-      queryResult.columns.length === 0
-    ) {
-      // data가 있으면 첫 번째 객체의 키를 사용
-      if (data.length > 0) {
-        return Object.keys(data[0]);
-      }
-      return [];
+    if (data.length > 0) {
+      return Object.keys(data[0]);
     }
-    return queryResult.columns;
-  }, [queryResult, data]);
+    return [];
+  }, [data]);
 
   // 동적으로 컬럼 정의 생성
   const columns = useResultColumns(data, columnNames);
@@ -96,14 +81,8 @@ export default function ResultsTable() {
     getPaginationRowModel: getPaginationRowModel(), // 페이지네이션 모델 활성화
   });
 
-  // 로딩 상태
-  if (isExecuting) return <LoadingResults />;
-  // 에러 상태
-  if (error) return <ErrorResults error={error} onRetry={executeQuery} />;
-  // 빈 데이터 처리
-  if (!data || data.length === 0) return <EmptyResults />;
-
-  // 테이블 렌더링
+  // 빈 데이터 처리는 부모 컴포넌트(RightPanel)에서 처리
+  // 여기서는 테이블만 렌더링
   return (
     <div className="w-full h-full flex flex-col">
       {/* 스크롤 가능한 테이블 컨테이너 */}
