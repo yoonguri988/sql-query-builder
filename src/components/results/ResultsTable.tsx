@@ -44,9 +44,9 @@ export default function ResultsTable() {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   // 스토어에서 데이터 가져오기
-  const { queryResult, isExecuting, error } = useQueryStore();
+  const { queryResult, isExecuting, error, executeQuery } = useQueryStore();
 
-  // ✅ 올바른 데이터 구조로 변환
+  // 올바른 데이터 구조로 변환
   const data: TableData[] = useMemo(() => {
     // queryResult가 없거나 data 배열이 없으면 빈 배열 반환
     if (!queryResult || !queryResult.data || queryResult.data.length === 0) {
@@ -58,7 +58,7 @@ export default function ResultsTable() {
     return queryResult.data as TableData[];
   }, [queryResult]);
 
-  // ✅ columns 추출 (첫 번째 데이터 객체의 키 사용)
+  // columns 추출 (첫 번째 데이터 객체의 키 사용)
   const columnNames = useMemo(() => {
     if (
       !queryResult ||
@@ -99,7 +99,7 @@ export default function ResultsTable() {
   // 로딩 상태
   if (isExecuting) return <LoadingResults />;
   // 에러 상태
-  if (error) return <ErrorResults error={error} />;
+  if (error) return <ErrorResults error={error} onRetry={executeQuery} />;
   // 빈 데이터 처리
   if (!data || data.length === 0) return <EmptyResults />;
 

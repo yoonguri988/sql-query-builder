@@ -11,6 +11,7 @@ import { executeQueryWithMetadata, initDatabase } from "@/lib/db/init-db";
 import validateQueryState from "@/lib/query/validateQueryState";
 import { escapeSQLString } from "@/lib/utils";
 import { SQLExecutionError } from "@/lib/db/sql-errors";
+import { toast } from "@/hooks/use-toast";
 
 interface QueryStore extends QueryState {
   // FROM 액션
@@ -298,6 +299,24 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         isExecuting: false,
       });
 
+      // 성공 Toast 알림
+      if (result.metadata.status === "success") {
+        toast({
+          title: "쿼리 실행 성공",
+          description: `${result.data.rowCount}개의 행이 ${result.metadata.executionTime}ms에 반환되었습니다.`,
+        });
+
+        // 히스토리에 자동 저장
+        get().addToHistory({
+          id: "", // addToHistory에서 자동 생성
+          sql: state.generatedSQL,
+          timestamp: new Date(),
+          executionTime: result.metadata.executionTime,
+          rowCount: result.data.rowCount,
+          status: "success",
+        });
+      }
+
       // ExecutionResult 반환
       return result;
     } catch (e) {
@@ -328,6 +347,24 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         queryResult: null,
         executionMetadata: errorMetadata,
         executionTime: 0,
+      });
+
+      // 에러 Toast 알림
+      toast({
+        variant: "destructive",
+        title: "쿼리 실행 실패",
+        description: errorMessage,
+      });
+
+      // 에러도 히스토리에 저장
+      get().addToHistory({
+        id: "", // addToHistory에서 자동 생성
+        sql: state.generatedSQL,
+        timestamp: new Date(),
+        executionTime: 0,
+        rowCount: 0,
+        status: "error",
+        error: errorMessage,
       });
 
       // 에러 결과도 ExecutionResult 형태로 반환
@@ -394,6 +431,7 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       isExecuting: false,
       generatedSQL: "",
       error: null,
+      queryHistory: [],
     });
   },
   // 쿼리 히스토리
