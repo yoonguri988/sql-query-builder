@@ -9,16 +9,25 @@ export default defineConfig({
     environment: 'jsdom',
     setupFiles: ['./vitest.setup.ts'],
     include: ['src/**/*.{test,spec}.{ts,tsx}'],
+    css: true, // CSS 모듈 지원
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       exclude: [
         'node_modules/',
-        'src/__tests__/setup.ts',
+        'vitest.setup.ts',
         '**/*.d.ts',
         '**/*.config.*',
         '**/mockData.ts',
+        'src/types/**',
+        'src/app/**', // Next.js app 디렉토리
       ],
+      thresholds: {
+        lines: 80,
+        functions: 80,
+        branches: 75,
+        statements: 80,
+      },
     },
   },
   resolve: {
