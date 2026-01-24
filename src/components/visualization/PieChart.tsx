@@ -8,6 +8,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useEffect, useState } from "react";
+import { getChartColors } from "@/lib/chart/chart-theme";
+import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
 
 interface PieChartProps {
@@ -15,10 +18,28 @@ interface PieChartProps {
   config: ChartConfig;
 }
 
-const DEFAULT_COLORS = ["#9112BC", "#3561F0", "#EE7EF0", "#F03E35", "#000000"];
-
 export default function PieChart({ data, config }: PieChartProps) {
-  const colors = config.colors || DEFAULT_COLORS;
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    const checkDarkMode = () => {
+      const isDarkMode = document.documentElement.classList.contains("dark");
+      setIsDark(isDarkMode);
+    };
+
+    checkDarkMode();
+
+    const observer = new MutationObserver(checkDarkMode);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  const colors = config.colors || getChartColors(isDark).primary;
+  const themeColors = getChartColors(isDark);
 
   const valueKey = config.yAxis[0];
   const nameKey = config.xAxis;
@@ -39,8 +60,10 @@ export default function PieChart({ data, config }: PieChartProps) {
             <Cell key={`cell-${index}`} fill={colors[index % colors.length]} />
           ))}
         </Pie>
-        <Tooltip />
-        {config.showLegend && <Legend />}
+        <Tooltip content={<CustomTooltip />} />
+        {config.showLegend && (
+          <Legend wrapperStyle={{ color: themeColors.text }} />
+        )}
       </RechartsPie>
     </ResponsiveContainer>
   );
