@@ -7,6 +7,7 @@ import ResultsTable from "@/components/results/ResultsTable";
 import LoadingResults from "@/components/results/LoadingResults";
 import ErrorResults from "@/components/results/ErrorResults";
 import EmptyResults from "@/components/results/EmptyResults";
+import VisualizationTab from "@/components/visualization/VisualizationTab";
 import { useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 
@@ -125,7 +126,7 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Data Visualization</h2>
               <div className="text-muted-foreground">
-                차트가 여기에 렌더링됩니다.
+                <VisualizationTab />
               </div>
             </div>
           </TabsContent>
