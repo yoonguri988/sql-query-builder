@@ -181,8 +181,11 @@ export default function TestChartSettingsPage() {
           <div>
             <h3 className="font-semibold mb-2">검증 포인트</h3>
             <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground">
-              <li>X축 드롭다운에 "month"만 표시되는가?</li>
-              <li>Y축 체크박스에 "sales", "cost", "profit"만 표시되는가?</li>
+              <li>X축 드롭다운에 {'"month"'}만 표시되는가?</li>
+              <li>
+                Y축 체크박스에 {'"sales"'}, {'"cost"'}, {'"profit"'}만
+                표시되는가?
+              </li>
               <li>차트 타입 변경 시 즉시 반영되는가?</li>
               <li>여러 Y축 선택 시 모두 차트에 표시되는가?</li>
               <li>범례와 그리드 옵션이 정상 작동하는가?</li>
