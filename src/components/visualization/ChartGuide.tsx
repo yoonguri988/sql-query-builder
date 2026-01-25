@@ -32,6 +32,9 @@ export default function ChartGuide() {
           size="sm"
           onClick={() => setIsOpen(!isOpen)}
           className="h-auto p-1 ml-2"
+          /** 접근성 개선 */
+          aria-label={isOpen ? "가이드 접기" : "가이드 펼치기"}
+          aria-expanded={isOpen}
         >
           {isOpen ? (
             <ChevronUp className="h-4 w-4" />

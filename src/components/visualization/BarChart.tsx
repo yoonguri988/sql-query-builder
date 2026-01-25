@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface BarChartProps {
   data: ChartData[];
@@ -21,30 +22,16 @@ interface BarChartProps {
 }
 
 export default function BarChart({ data, config }: BarChartProps) {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
-    };
-
-    checkDarkMode();
-
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
+  const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+      className="min-h-[300px] h-[400px]"
+    >
       <RechartsBar
         data={data}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}

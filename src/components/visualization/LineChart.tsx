@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface LineChartProps {
   data: ChartData[];
@@ -21,30 +22,16 @@ interface LineChartProps {
 }
 
 export default function LineChart({ data, config }: LineChartProps) {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
-    };
-
-    checkDarkMode();
-
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
+  const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+      className="min-h-[300px] h-[400px]"
+    >
       <RechartsLine
         data={data}
         margin={{ top: 20, right: 30, left: 20, bottom: 5 }}

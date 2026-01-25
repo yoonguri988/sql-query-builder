@@ -12,6 +12,7 @@ import ChartSettings from "./ChartSettings";
 import BarChart from "./BarChart";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
+import EmptyChart from "./EmptyChart";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BarChart3, Download } from "lucide-react";
 import { Button } from "../ui/button";
@@ -19,6 +20,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { downloadChartAsPNG } from "@/lib/chart/chart-download";
 import ChartGuide from "./ChartGuide";
+import NotAxisChart from "./NotAxisChart";
 
 export default function VisualizationTab() {
   const queryResult = useQueryStore((state) => state.queryResult);
@@ -47,50 +49,34 @@ export default function VisualizationTab() {
     return transformToChartData(queryResult.data); // 차트 데이터 변환
   }, [queryResult]);
 
-  /** queryResult 변경시 자동으로 리렌더링 */
+  /** queryResult 변경시 자동으로 리렌더링
+   * - chartConfig.xAxis와 chartConfig.yAxis만 확인
+   */
   useEffect(() => {
     if (xAxisCandidates.length > 0 && !chartConfig.xAxis) {
       setXAxis(xAxisCandidates[0]);
     }
+  }, [xAxisCandidates, chartConfig.xAxis, setXAxis]);
+
+  useEffect(() => {
     if (yAxisCandidates.length > 0 && chartConfig.yAxis.length === 0) {
       setYAxis([yAxisCandidates[0]]);
     }
-  }, [xAxisCandidates, yAxisCandidates, chartConfig, setXAxis, setYAxis]);
+  }, [yAxisCandidates, chartConfig.yAxis, setYAxis]);
 
   /** 빈 결과 */
   if (!queryResult || queryResult.data.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <Alert>
-          <BarChart3 className="h-4 w-4" />
-          <AlertDescription>
-            쿼리를 실행하면 결과를 차트로 시각화할 수 있습니다.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
+    return <EmptyChart />;
   }
 
   /** 축 미설정 */
   if (!chartConfig.xAxis || chartConfig.yAxis.length === 0) {
     return (
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <ChartSettings
-            columnInfos={columnInfos}
-            xAxisCandidates={xAxisCandidates}
-            yAxisCandidates={yAxisCandidates}
-          />
-        </div>
-        <div className="lg:col-span-2 flex items-center justify-center">
-          <Alert>
-            <BarChart3 className="h-4 w-4" />
-            <AlertDescription>
-              X축과 Y축을 선택하여 차트를 생성하세요.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </div>
+      <NotAxisChart
+        columnInfos={columnInfos}
+        xAxisCandidates={xAxisCandidates}
+        yAxisCandidates={yAxisCandidates}
+      />
     );
   }
 
@@ -130,10 +116,17 @@ export default function VisualizationTab() {
         description: "차트 이미지를 다운로드 했습니다.",
       });
     } catch (error) {
-      console.error("차트 다운로드 중 에러:", error);
+      /** 에러처리개선 */
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "알 수 없는 오류가 발생했습니다.";
+
+      console.error("차트 다운로드 중 에러:", errorMessage);
+
       toast({
-        title: "Error",
-        description: "차트를 다운로드 받는데 실패했습니다.\n다시 시도해주세요.",
+        title: "다운로드 실패",
+        description: `차트를 다운로드하지 못했습니다.\n${errorMessage}`,
         variant: "destructive",
       });
     } finally {

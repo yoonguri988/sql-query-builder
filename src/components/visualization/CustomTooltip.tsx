@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface CustomTooltipProps {
   active?: boolean;
@@ -18,25 +19,7 @@ export default function CustomTooltip({
   payload,
   label,
 }: CustomTooltipProps) {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
-    };
-
-    checkDarkMode();
-
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
+  const isDark = useDarkMode();
   const themeColors = getChartColors(isDark);
 
   if (!active || !payload || !payload.length) {
