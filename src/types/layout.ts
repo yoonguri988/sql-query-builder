@@ -11,6 +11,7 @@ export interface HeaderProps {
 
 export interface LeftSidebarProps {
   isOpen: boolean;
+  isDark: boolean;
   onClose: () => void;
 }
 
