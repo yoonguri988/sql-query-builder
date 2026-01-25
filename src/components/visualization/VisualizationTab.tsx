@@ -18,6 +18,7 @@ import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { downloadChartAsPNG } from "@/lib/chart/chart-download";
+import ChartGuide from "./ChartGuide";
 
 export default function VisualizationTab() {
   const queryResult = useQueryStore((state) => state.queryResult);
@@ -110,7 +111,7 @@ export default function VisualizationTab() {
     if (!chartRef.current) {
       toast({
         title: "Error",
-        description: "Chart not found. Please try again.",
+        description: "차트를 찾을 수 없습니다.\n다시 시도해주세요.",
         variant: "destructive",
       });
       return;
@@ -126,13 +127,13 @@ export default function VisualizationTab() {
 
       toast({
         title: "Success",
-        description: "Chart downloaded successfully!",
+        description: "차트 이미지를 다운로드 했습니다.",
       });
     } catch (error) {
-      console.error("Error downloading chart:", error);
+      console.error("차트 다운로드 중 에러:", error);
       toast({
         title: "Error",
-        description: "Failed to download chart. Please try again.",
+        description: "차트를 다운로드 받는데 실패했습니다.\n다시 시도해주세요.",
         variant: "destructive",
       });
     } finally {
@@ -149,6 +150,7 @@ export default function VisualizationTab() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        <ChartGuide />
         <div className="space-y-4">
           <ChartSettings
             columnInfos={columnInfos}
