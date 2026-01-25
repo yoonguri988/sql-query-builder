@@ -56,6 +56,7 @@ export default function MainLayout() {
         {/* Left Sidebar */}
         <LeftSidebar
           isOpen={showLeftSidebar}
+          isDark={isDark}
           onClose={() => setShowLeftSidebar(false)}
         />
 

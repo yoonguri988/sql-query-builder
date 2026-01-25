@@ -1,16 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Loader2, X } from "lucide-react";
 import { LeftSidebarProps } from "@/types/layout";
 import DBSchemaTree from "./DBSchemaTree";
 import QueryHistory from "./QueryHistory";
 import { Button } from "../ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDBStore } from "@/store/db-store";
+import { Database, History } from "lucide-react";
 
 export default function LeftSidebar({
   isOpen = true,
   onClose,
+  isDark,
 }: LeftSidebarProps) {
   const { initialize, isInitialized, isLoading, error } = useDBStore();
 
@@ -45,16 +48,15 @@ export default function LeftSidebar({
     <aside
       className={`
         fixed lg:static inset-y-0 left-0 z-40
-        w-64 lg:w-64
+        w-full md:w-64 lg:w-[200px] xl:w-[300px]
         bg-background border-r
         transform transition-transform duration-200 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
-        overflow-y-auto
         flex flex-col
+        h-full
       `}
     >
-      {/* 모바일 헤더 */}
       <div className="lg:hidden flex items-center justify-between p-3 border-b">
         <h2 className="font-semibold">Menu</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
@@ -62,16 +64,26 @@ export default function LeftSidebar({
         </Button>
       </div>
 
-      {/* 데이터베이스 스키마 섹션 */}
-      <div className="p-4 flex-1 overflow-y-auto">
-        {/* Accordion을 사용한 DB 스키마 트리 뷰 */}
-        <DBSchemaTree />
+      <Tabs defaultValue="schema" className="flex-1 flex flex-col h-full">
+        <TabsList className="grid w-full grid-cols-2 rounded-none border-b">
+          <TabsTrigger value="schema" className="flex items-center gap-2">
+            <Database className="h-4 w-4" />
+            <span className="hidden sm:inline">Schema</span>
+          </TabsTrigger>
+          <TabsTrigger value="history" className="flex items-center gap-2">
+            <History className="h-4 w-4" />
+            <span className="hidden sm:inline">History</span>
+          </TabsTrigger>
+        </TabsList>
 
-        {/* 쿼리 히스토리 섹션 */}
-        <div className="mt-6">
-          <QueryHistory />
-        </div>
-      </div>
+        <TabsContent value="schema" className="flex-1 m-0 p-4 overflow-y-auto">
+          <DBSchemaTree />
+        </TabsContent>
+
+        <TabsContent value="history" className="flex-1 m-0 h-full">
+          <QueryHistory isDark={isDark} />
+        </TabsContent>
+      </Tabs>
     </aside>
   );
 }
