@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
+import { useDarkMode } from "@/hooks/useDarkMode";
 
 interface PieChartProps {
   data: ChartData[];
@@ -19,25 +20,7 @@ interface PieChartProps {
 }
 
 export default function PieChart({ data, config }: PieChartProps) {
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    const checkDarkMode = () => {
-      const isDarkMode = document.documentElement.classList.contains("dark");
-      setIsDark(isDarkMode);
-    };
-
-    checkDarkMode();
-
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
-    return () => observer.disconnect();
-  }, []);
-
+  const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
 
@@ -45,7 +28,11 @@ export default function PieChart({ data, config }: PieChartProps) {
   const nameKey = config.xAxis;
 
   return (
-    <ResponsiveContainer width="100%" height={400}>
+    <ResponsiveContainer
+      width="100%"
+      height="100%"
+      className="min-h-[300px] h-[400px]"
+    >
       <RechartsPie>
         <Pie
           data={data}

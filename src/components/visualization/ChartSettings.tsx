@@ -39,13 +39,20 @@ export default function ChartSettings({
     setShowGrid,
   } = useChartStore();
 
+  /** 타입 캐스팅을 명시적 */
+  const handleChartTypeChange = (value: string) => {
+    if (value === "bar" || value === "line" || value === "pie") {
+      setChartType(value);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="space-y-3">
         <Label>Chart Type</Label>
         <RadioGroup
           value={chartConfig.type}
-          onValueChange={(value: ChartType) => setChartType(value)}
+          onValueChange={handleChartTypeChange}
         >
           {CHART_TYPES.map((type) => (
             <div key={type.value} className="flex items-center space-x-2">
