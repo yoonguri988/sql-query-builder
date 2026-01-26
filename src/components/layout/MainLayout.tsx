@@ -7,46 +7,13 @@ import RightPanel from "@/components/layout/RightPanel";
 import MainContent from "@/components/layout/MainContent";
 
 export default function MainLayout() {
-  const [isDark, setIsDark] = useState(false);
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
-
-  // 다크모드 토글
-  const handleThemeToggle = () => {
-    setIsDark(!isDark);
-    if (!isDark) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  };
-
-  // 초기 테마 설정 (로컬스토리지 또는 시스템 설정)
-  useEffect(() => {
-    const savedTheme = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia(
-      "(prefers-color-scheme: dark)"
-    ).matches;
-
-    const shouldBeDark = savedTheme === "dark" || (!savedTheme && prefersDark);
-
-    setIsDark(shouldBeDark);
-    if (shouldBeDark) {
-      document.documentElement.classList.add("dark");
-    }
-  }, []);
-
-  // 테마 변경 시 로컬스토리지 저장
-  useEffect(() => {
-    localStorage.setItem("theme", isDark ? "dark" : "light");
-  }, [isDark]);
 
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
       <Header
-        onThemeToggle={handleThemeToggle}
-        isDark={isDark}
         onLeftSidebarToggle={() => setShowLeftSidebar(!showLeftSidebar)}
         onRightPanelToggle={() => setShowRightPanel(!showRightPanel)}
       />
@@ -56,7 +23,6 @@ export default function MainLayout() {
         {/* Left Sidebar */}
         <LeftSidebar
           isOpen={showLeftSidebar}
-          isDark={isDark}
           onClose={() => setShowLeftSidebar(false)}
         />
 
@@ -75,7 +41,6 @@ export default function MainLayout() {
         {/* Right Panel */}
         <RightPanel
           isOpen={showRightPanel}
-          isDark={isDark}
           onClose={() => setShowRightPanel(false)}
         />
 
