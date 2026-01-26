@@ -11,6 +11,7 @@ import { executeQueryWithMetadata, initDatabase } from "@/lib/db/init-db";
 import validateQueryState from "@/lib/query/validateQueryState";
 import { escapeSQLString } from "@/lib/utils";
 import { SQLExecutionError } from "@/lib/db/sql-errors";
+import { useHistoryStore } from "./history-store";
 
 export interface QueryStore extends QueryState {
   // FROM 액션
@@ -302,14 +303,14 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
       });
 
       // 히스토리에 자동 저장 (성공/실패 모두)
-      get().addToHistory({
-        id: "", // addToHistory에서 자동 생성
+      const currentState = get().saveCurrentState();
+      useHistoryStore.getState().addHistory({
         sql: state.generatedSQL,
-        timestamp: new Date(),
         executionTime: result.metadata.executionTime,
         rowCount: result.data.rowCount,
         status: result.metadata.status,
         error: result.metadata.error,
+        queryState: currentState,
       });
 
       // ExecutionResult 반환
@@ -336,12 +337,14 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
         timestamp: new Date(),
       };
 
-      set({
-        error: errorMessage,
-        isExecuting: false,
-        queryResult: null,
-        executionMetadata: errorMetadata,
+      const currentState = get().saveCurrentState();
+      useHistoryStore.getState().addHistory({
+        sql: state.generatedSQL,
         executionTime: 0,
+        rowCount: 0,
+        status: "error",
+        error: errorMessage,
+        queryState: currentState,
       });
 
       // 에러도 히스토리에 저장
