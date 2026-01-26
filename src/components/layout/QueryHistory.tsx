@@ -26,18 +26,16 @@ import {
 import { useQueryStore } from "@/store/query-store";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/store/ui-store";
+import { useTheme } from "next-themes";
 
-interface QueryHistoryProps {
-  isDark?: boolean; // 다크모드 상태
-}
-
-export default function QueryHistory({ isDark = false }: QueryHistoryProps) {
+export default function QueryHistory() {
   const { history, clearHistory, removeHistoryItem } = useHistoryStore();
   const { restoreFromHistory } = useQueryStore();
   const { setActiveRightPanelTab } = useUIStore();
   const { toast } = useToast();
+  const { theme } = useTheme();
   // 다크모드에 따라 스타일 선택
-  const syntaxStyle = isDark ? vscDarkPlus : vs;
+  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
 
   const handleRestore = (id: string) => {
     const item = useHistoryStore.getState().getHistoryById(id);

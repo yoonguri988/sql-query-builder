@@ -20,25 +20,23 @@ import { Copy, Check } from "lucide-react";
 import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useToast } from "@/hooks/use-toast";
 import ExecuteButton from "@/components/query-builder/ExecuteButton";
+import { useTheme } from "next-themes";
 
 interface SQLPreviewProps {
-  isDark?: boolean; // 다크모드 상태
   onExecute?: () => void; // Results 탭 활성화 콜백
 }
 
-export default function SQLPreview({
-  isDark = false,
-  onExecute,
-}: SQLPreviewProps) {
+export default function SQLPreview({ onExecute }: SQLPreviewProps) {
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const error = useQueryStore((state) => state.error);
 
   // 복사 Hook 사용
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   const { toast } = useToast();
+  const { theme } = useTheme();
 
   // 다크모드에 따라 스타일 선택
-  const syntaxStyle = isDark ? vscDarkPlus : vs;
+  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
 
   // 복사 핸들러
   const handleCopy = async () => {
