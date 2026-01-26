@@ -58,6 +58,9 @@ export interface QueryStore extends QueryState {
   queryHistory: QueryHistoryItem[];
   addToHistory: (item: QueryHistoryItem) => void;
   clearHistory: () => void;
+  // 히스토리 복원
+  restoreFromHistory: (item: QueryHistoryItem) => void;
+  saveCurrentState: () => QueryState;
 }
 
 const initialState: QueryState = {
@@ -434,5 +437,48 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
 
   clearHistory: () => {
     set({ queryHistory: [] });
+  },
+
+  // 히스토리 복원
+  restoreFromHistory: (item) => {
+    if (!item.queryState) {
+      // queryState가 없으면 SQL만 복원
+      set({
+        generatedSQL: item.sql,
+        error: null,
+      });
+      return;
+    }
+
+    // 전체 쿼리 상태 복원
+    const { queryState } = item;
+    set({
+      selectedTable: queryState.selectedTable,
+      selectedColumns: queryState.selectedColumns,
+      whereConditions: queryState.whereConditions,
+      orderBy: queryState.orderBy,
+      limit: queryState.limit,
+      generatedSQL: queryState.generatedSQL,
+      error: null,
+      queryResult: null,
+      executionMetadata: null,
+      executionTime: null,
+    });
+  },
+
+  saveCurrentState: () => {
+    const state = get();
+    return {
+      selectedTable: state.selectedTable,
+      selectedColumns: state.selectedColumns,
+      whereConditions: state.whereConditions,
+      orderBy: state.orderBy,
+      limit: state.limit,
+      generatedSQL: state.generatedSQL,
+      queryResult: state.queryResult,
+      executionMetadata: state.executionMetadata,
+      executionTime: state.executionTime,
+      error: state.error,
+    };
   },
 }));
