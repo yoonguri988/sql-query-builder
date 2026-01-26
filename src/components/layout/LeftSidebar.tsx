@@ -13,7 +13,6 @@ import { Database, History } from "lucide-react";
 export default function LeftSidebar({
   isOpen = true,
   onClose,
-  isDark,
 }: LeftSidebarProps) {
   const { initialize, isInitialized, isLoading, error } = useDBStore();
 
@@ -81,7 +80,7 @@ export default function LeftSidebar({
         </TabsContent>
 
         <TabsContent value="history" className="flex-1 m-0 h-full">
-          <QueryHistory isDark={isDark} />
+          <QueryHistory />
         </TabsContent>
       </Tabs>
     </aside>

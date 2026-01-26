@@ -15,11 +15,7 @@ import EmptyResults from "@/components/results/EmptyResults";
 import { useQueryStore } from "@/store/query-store";
 import { useUIStore } from "@/store/ui-store";
 
-export default function RightPanel({
-  isOpen,
-  onClose,
-  isDark,
-}: RightPanelProps) {
+export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
   // 탭 상태 관리
   const { activeRightPanelTab, setActiveRightPanelTab } = useUIStore();
 
@@ -90,7 +86,7 @@ export default function RightPanel({
 
           {/* SQL Preview 탭 */}
           <TabsContent value="sql" className="flex-1 overflow-auto p-4 m-0">
-            <SQLPreview isDark={isDark} onExecute={handleExecute} />
+            <SQLPreview onExecute={handleExecute} />
           </TabsContent>
 
           {/* Results 탭 */}
