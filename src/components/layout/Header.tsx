@@ -2,11 +2,10 @@
 
 import { HeaderProps } from "@/types/layout";
 import { Button } from "../ui/button";
-import { Github, Menu, Moon, Sun } from "lucide-react";
+import { Github, Menu } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 export default function Header({
-  isDark,
-  onThemeToggle,
   onLeftSidebarToggle,
   onRightPanelToggle,
 }: HeaderProps) {
@@ -41,15 +40,7 @@ export default function Header({
           <span className="hidden sm:inline">Results</span>
           <span className="sm:hidden">📊</span>
         </Button>
-        {/* 다크모드 토글 */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onThemeToggle}
-          aria-label="Toggle theme"
-        >
-          {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-        </Button>
+        <ThemeToggle />
 
         {/* GitHub 링크 */}
         <Button variant="ghost" size="icon" asChild>
