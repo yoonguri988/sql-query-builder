@@ -13,6 +13,7 @@ import LoadingResults from "@/components/results/LoadingResults";
 import ErrorResults from "@/components/results/ErrorResults";
 import EmptyResults from "@/components/results/EmptyResults";
 import { useQueryStore } from "@/store/query-store";
+import { useUIStore } from "@/store/ui-store";
 
 export default function RightPanel({
   isOpen,
@@ -20,7 +21,7 @@ export default function RightPanel({
   isDark,
 }: RightPanelProps) {
   // 탭 상태 관리
-  const [activeTab, setActiveTab] = useState<"sql" | "results">("sql");
+  const { activeRightPanelTab, setActiveRightPanelTab } = useUIStore();
 
   // query-store에서 가져오기
   const queryResult = useQueryStore((state) => state.queryResult);
@@ -38,7 +39,7 @@ export default function RightPanel({
 
   // Results 탭 활성화 핸들러
   const handleExecute = () => {
-    setActiveTab("results");
+    setActiveRightPanelTab("results");
   };
 
   return (
@@ -65,8 +66,10 @@ export default function RightPanel({
       {/* 스크롤 가능한 컨텐츠 영역 */}
       <div className="flex-1 custom-scrollbar">
         <Tabs
-          value={activeTab}
-          onValueChange={(value) => setActiveTab(value as "sql" | "results")}
+          value={activeRightPanelTab}
+          onValueChange={(value) =>
+            setActiveRightPanelTab(value as "sql" | "results")
+          }
           className="h-full flex flex-col"
         >
           <TabsList className="grid w-full grid-cols-2 m-4 mb-0">
