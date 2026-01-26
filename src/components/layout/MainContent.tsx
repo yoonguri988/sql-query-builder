@@ -3,6 +3,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MainContentProps } from "@/types/layout";
 import QueryBuilder from "@/components/query-builder/QueryBuilder";
+import SQLEditor from "@/components/sql-editor/SQLEditor";
 import ResultsTable from "@/components/results/ResultsTable";
 import LoadingResults from "@/components/results/LoadingResults";
 import ErrorResults from "@/components/results/ErrorResults";
@@ -82,7 +83,7 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
             <div className="max-w-4xl mx-auto space-y-6">
               <h2 className="text-2xl font-bold">SQL Editor</h2>
               <div className="text-muted-foreground">
-                SQL Editor가 여기에 렌더링됩니다.
+                <SQLEditor />
               </div>
             </div>
           </TabsContent>
