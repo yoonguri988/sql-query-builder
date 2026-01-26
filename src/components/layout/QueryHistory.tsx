@@ -23,6 +23,9 @@ import {
   vscDarkPlus,
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
+import { useQueryStore } from "@/store/query-store";
+import { useToast } from "@/hooks/use-toast";
+import { useUIStore } from "@/store/ui-store";
 
 interface QueryHistoryProps {
   isDark?: boolean; // 다크모드 상태
@@ -30,13 +33,25 @@ interface QueryHistoryProps {
 
 export default function QueryHistory({ isDark = false }: QueryHistoryProps) {
   const { history, clearHistory, removeHistoryItem } = useHistoryStore();
+  const { restoreFromHistory } = useQueryStore();
+  const { setActiveRightPanelTab } = useUIStore();
+  const { toast } = useToast();
   // 다크모드에 따라 스타일 선택
   const syntaxStyle = isDark ? vscDarkPlus : vs;
 
   const handleRestore = (id: string) => {
     const item = useHistoryStore.getState().getHistoryById(id);
-    if (item && item.queryState) {
-      console.log("Restoring query:", item);
+    if (item) {
+      restoreFromHistory(item);
+
+      // SQL Preview 탭으로 이동
+      setActiveRightPanelTab("sql");
+
+      toast({
+        title: "쿼리 복원 완료",
+        description: "이전 쿼리가 복원되었습니다.",
+        duration: 2000,
+      });
     }
   };
 
