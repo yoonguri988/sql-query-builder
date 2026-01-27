@@ -20,6 +20,11 @@ beforeAll(() => {
       clearMeasures: vi.fn(),
       getEntriesByName: vi.fn(() => []),
       getEntriesByType: vi.fn(() => []),
+      memory: {
+        jsHeapSizeLimit: 2147483648,
+        totalJSHeapSize: 10485760,
+        usedJSHeapSize: 10485760,
+      },
     } as unknown as Performance;
   }
 });
@@ -58,6 +63,38 @@ vi.mock("sql.js", () => {
     ),
   };
 });
+
+// ========================================
+// next-themes 모킹
+// ========================================
+vi.mock("next-themes", () => ({
+  ThemeProvider: ({ children }: { children: React.ReactNode }) => children,
+  useTheme: () => ({
+    theme: "light",
+    setTheme: vi.fn((theme: string) => {
+      // 다크모드 설정 시 DOM 클래스 변경
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+      }
+      // system 모드는 matchMedia에 따라 결정
+      else if (theme === "system") {
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        if (prefersDark) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
+      }
+    }),
+    themes: ["light", "dark", "system"],
+    systemTheme: "light",
+    resolvedTheme: "light",
+  }),
+}));
 
 // ========================================
 // localStorage 모킹
@@ -211,5 +248,12 @@ afterEach(() => {
 declare global {
   interface Window {
     matchMedia: (query: string) => MediaQueryList;
+  }
+  interface Performance {
+    memory?: {
+      jsHeapSizeLimit: number;
+      totalJSHeapSize: number;
+      usedJSHeapSize: number;
+    };
   }
 }
