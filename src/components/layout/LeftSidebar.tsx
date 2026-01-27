@@ -42,7 +42,12 @@ export default function LeftSidebar({
     >
       <div className="lg:hidden flex items-center justify-between p-3 border-b">
         <h2 className="font-semibold">Menu</h2>
-        <Button variant="ghost" size="icon" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          aria-label="leftExit"
+        >
           <X className="h-5 w-5" />
         </Button>
       </div>

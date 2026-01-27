@@ -54,7 +54,12 @@ export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
       {/* 모바일/태블릿 헤더 */}
       <div className="lg:hidden flex items-center justify-between p-3 border-b bg-background shrink-0">
         <h3 className="font-semibold">Results Panel</h3>
-        <Button variant="ghost" size="icon" onClick={onClose}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onClose}
+          aria-label="rightExit"
+        >
           <X className="h-5 w-5" />
         </Button>
       </div>
