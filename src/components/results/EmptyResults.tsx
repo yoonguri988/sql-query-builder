@@ -1,27 +1,26 @@
-"use client";
+import { FileQuestion } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 
-import { SearchX } from "lucide-react";
-
-interface Props {
+interface EmptyResultsProps {
   message?: string;
+  showIcon?: boolean;
 }
 
 export default function EmptyResults({
-  message = "결과를 찾을 수 없습니다.",
-}: Props) {
+  message = "쿼리를 실행하여 결과를 확인하세요.",
+  showIcon = true,
+}: EmptyResultsProps) {
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-420px)] bg-card rounded-lg border border-dashed border-border">
-      <div className="text-center space-y-4">
-        <div className="rounded-full bg-muted w-16 h-16 flex items-center justify-center mx-auto">
-          <SearchX className="w-8 h-8 text-muted-foreground" />
-        </div>
-        <div className="space-y-2">
-          <p className="text-lg font-semibold text-foreground">{message}</p>
-          <p className="text-sm text-muted-foreground">
-            여기에 결과를 표시하려면 쿼리를 실행하세요.
-          </p>
-        </div>
-      </div>
-    </div>
+    <Card>
+      <CardContent className="flex flex-col items-center justify-center p-12 text-center">
+        {showIcon && (
+          <div className="mb-4 rounded-full bg-muted p-4">
+            <FileQuestion className="h-8 w-8 text-muted-foreground" />
+          </div>
+        )}
+        <h3 className="text-lg font-semibold mb-2">결과 없음</h3>
+        <p className="text-sm text-muted-foreground max-w-sm">{message}</p>
+      </CardContent>
+    </Card>
   );
 }
