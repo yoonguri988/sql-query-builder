@@ -18,6 +18,7 @@ export default function Header({
           size="icon"
           className="lg:hidden"
           onClick={onLeftSidebarToggle}
+          aria-label="menu"
         >
           <Menu className="h-5 w-5" />
         </Button>
