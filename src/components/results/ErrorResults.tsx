@@ -1,6 +1,9 @@
 "use client";
 
-import { TriangleAlert } from "lucide-react";
+import { AlertCircle, Lightbulb, XCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { getSQLErrorMessage } from "@/lib/error/error-messages";
 
 interface Props {
   error: string;
@@ -8,28 +11,46 @@ interface Props {
 }
 
 export default function ErrorResults({ error, onRetry }: Props) {
+  const errorInfo = getSQLErrorMessage(new Error(error));
+
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-420px)] bg-card rounded-lg border border-destructive/20">
-      <div className="text-center space-y-4 max-w-md px-6">
-        <div className="rounded-full bg-destructive/10 w-16 h-16 flex items-center justify-center mx-auto">
-          <TriangleAlert className="w-8 h-8 text-destructive" />
-        </div>
-        <div className="space-y-2">
-          <p className="text-lg font-semibold text-foreground">쿼리 오류</p>
-          <p className="text-sm text-muted-foreground break-words">{error}</p>
-        </div>
-        <p className="text-xs text-muted-foreground">
-          SQL 문법을 확인 후에 다시 쿼리를 실행해주세요
-        </p>
-        {onRetry && (
-          <button
-            onClick={onRetry}
-            className="mt-4 px-4 py-2 text-sm font-medium text-primary-foreground bg-primary rounded-md hover:bg-primary/90 transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-          >
-            다시 시도
-          </button>
-        )}
-      </div>
+    <div className="space-y-4">
+      {/* 에러 알림 */}
+      <Alert variant="destructive">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>{errorInfo.title}</AlertTitle>
+        <AlertDescription>{errorInfo.description}</AlertDescription>
+      </Alert>
+
+      {/* 해결 방법 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <Lightbulb className="h-4 w-4 text-yellow-500" />
+            해결 방법
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-sm text-muted-foreground">
+            {errorInfo.suggestion}
+          </p>
+        </CardContent>
+      </Card>
+
+      {/* 상세 오류 메시지 */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-sm">
+            <XCircle className="h-4 w-4" />
+            상세 오류 메시지
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <pre className="text-xs bg-muted p-3 rounded overflow-x-auto whitespace-pre-wrap break-words">
+            {error}
+          </pre>
+        </CardContent>
+      </Card>
     </div>
   );
 }
