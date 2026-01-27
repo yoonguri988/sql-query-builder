@@ -1,22 +1,17 @@
-"use client";
+import { Loader2 } from "lucide-react";
+import TableSkeleton from "./TableSkeleton";
 
 export default function LoadingResults() {
   return (
-    <div className="flex items-center justify-center h-[calc(100vh-420px)] bg-card rounded-lg border border-border">
-      <div className="text-center space-y-4">
-        <div className="relative">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-muted mx-auto"></div>
-          <div className="absolute inset-0 animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
-        </div>
-        <div className="space-y-1">
-          <p className="text-base font-medium text-foreground">
-            쿼리가 실행되고 있습니다.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            잠시만 기다려 주세요...
-          </p>
-        </div>
+    <div className="space-y-4">
+      {/* 로딩 메시지 */}
+      <div className="flex items-center justify-center p-4 gap-2">
+        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+        <p className="text-sm text-muted-foreground">쿼리 실행 중...</p>
       </div>
+
+      {/* 테이블 스켈레톤 */}
+      <TableSkeleton />
     </div>
   );
 }
