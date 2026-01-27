@@ -9,6 +9,8 @@ import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDBStore } from "@/store/db-store";
 import { Database, History } from "lucide-react";
+import SidebarLoading from "./SidebarLoading";
+import SidebarError from "./SidebarError";
 
 export default function LeftSidebar({
   isOpen = true,
@@ -22,26 +24,8 @@ export default function LeftSidebar({
     }
   }, [initialize, isInitialized, isLoading]);
 
-  if (isLoading) {
-    return (
-      <aside className="w-[250px] border-r border-border bg-background p-4">
-        <div className="flex items-center justify-center h-full">
-          <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-        </div>
-      </aside>
-    );
-  }
-
-  if (error) {
-    return (
-      <aside className="w-[250px] border-r border-border bg-background p-4">
-        <div className="text-sm text-destructive">
-          <p className="font-semibold">Error:</p>
-          <p>{error}</p>
-        </div>
-      </aside>
-    );
-  }
+  if (isLoading) return <SidebarLoading />;
+  if (error) return <SidebarError error={error} onRetry={initialize} />;
 
   return (
     <aside
