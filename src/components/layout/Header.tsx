@@ -4,11 +4,9 @@ import { HeaderProps } from "@/types/layout";
 import { Button } from "../ui/button";
 import { Github, Menu } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
+import { memo } from "react";
 
-export default function Header({
-  onLeftSidebarToggle,
-  onRightPanelToggle,
-}: HeaderProps) {
+function Header({ onLeftSidebarToggle, onRightPanelToggle }: HeaderProps) {
   return (
     <header className="flex items-center justify-between px-4 py-3 border-b bg-background">
       {/* 왼쪽: 모바일 햄버거 메뉴 + 로고 */}
@@ -57,3 +55,5 @@ export default function Header({
     </header>
   );
 }
+
+export default memo(Header);
