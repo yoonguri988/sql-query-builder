@@ -71,7 +71,6 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
           {/* Query Builder 탭 */}
           <TabsContent value="builder" className="p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
-              <h2 className="text-2xl font-bold">Query Builder</h2>
               <div className="text-muted-foreground">
                 <QueryBuilder />
               </div>

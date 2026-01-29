@@ -23,10 +23,9 @@ export default function Header({
           <Menu className="h-5 w-5" />
         </Button>
 
-        <div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
-          <span className="text-primary-foreground font-bold text-lg">SQL</span>
+        <div className="rounded flex items-center justify-center">
+          <div className="text-lg font-bold">SQL Query Builder</div>
         </div>
-        <h1 className="text-xl font-bold">Query Builder</h1>
       </div>
 
       {/* 오른쪽: 결과 패널 + 다크 모드 + GitHub */}

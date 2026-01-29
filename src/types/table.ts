@@ -18,7 +18,7 @@ export interface TableColumn {
   /** 컬럼의 고유 ID */
   id: string;
   /** 컬럼 헤더에 표시될 텍스트 */
-  header: string;
+  name: string;
   /** 데이터 객체에서 값을 가져올 키 */
   accessorKey: string;
   /** 컬럼 타입 (정렬 및 포맷팅에 사용) */
