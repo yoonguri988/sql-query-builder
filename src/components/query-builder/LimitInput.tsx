@@ -4,6 +4,8 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Hash } from "lucide-react";
+import EmptyState from "./EmptyState";
+import HintMessage from "./HintMessage";
 
 /**LimitInput 컴포넌트
  * LIMIT 절 값을 입력하는 필드
@@ -17,28 +19,16 @@ import { Hash } from "lucide-react";
  * @component
  */
 export default function LimitInput() {
-  const { selectedTable, limit, setLimit } = useQueryStore();
+  const selectedTable = useQueryStore((state) => state.selectedTable);
+  const limit = useQueryStore((state) => state.limit);
+  const setLimit = useQueryStore((state) => state.setLimit);
+
   const [inputValue, setInputValue] = useState(limit.toString());
 
   // limit 상태 변경 시 inputValue 동기화
   useEffect(() => {
     setInputValue(limit.toString());
   }, [limit]);
-
-  // 테이블이 선택되지 않았을 때
-  if (!selectedTable) {
-    return (
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <Hash className="h-4 w-4" />
-          LIMIT
-        </Label>
-        <div className="text-sm text-muted-foreground">
-          먼저 테이블을 선택하세요
-        </div>
-      </div>
-    );
-  }
 
   // 입력 변경 핸들러
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -80,6 +70,9 @@ export default function LimitInput() {
 
   const quickValues = [10, 50, 100, 500];
 
+  /* 빈 상태 */
+  if (!selectedTable) return <EmptyState />;
+
   return (
     <div className="space-y-3">
       {/* 헤더 */}
@@ -119,9 +112,7 @@ export default function LimitInput() {
       </div>
 
       {/* 안내 메시지 */}
-      <div className="text-xs text-muted-foreground">
-        💡 조회할 최대 행 수를 지정합니다. (기본값: 100)
-      </div>
+      <HintMessage msg="조회할 최대 행 수를 지정합니다. (기본값: 100)" />
     </div>
   );
 }

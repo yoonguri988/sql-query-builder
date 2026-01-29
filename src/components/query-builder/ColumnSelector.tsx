@@ -1,9 +1,13 @@
 import useTableColumns, { useColumnNames } from "@/hooks/useTableColumns";
 import { useQueryStore } from "@/store/query-store";
 import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CheckSquare, Columns3, Square } from "lucide-react";
+import { Columns3 } from "lucide-react";
+import HintMessage from "@/components/query-builder/HintMessage";
+import EmptyState from "@/components/query-builder/EmptyState";
+import ColumnCountInfo from "./ColumnCountInfo";
+import { useMemo } from "react";
+import ColumnSelectorItem from "./ColumnSelectorItem";
+import AllSelectedButton from "./AllSelectedButton";
 
 /** Column Selector 컴포넌트
  * SELECT 절에서 사용할 컬럼을 선택하는 Multi-CheckBox
@@ -20,36 +24,27 @@ import { CheckSquare, Columns3, Square } from "lucide-react";
  * <ColumnSelector />
  */
 export default function ColumnSelector() {
-  const {
-    selectedTable,
-    selectedColumns,
-    toggleColumn,
-    selectAllColumns,
-    deselectAllColumns,
-  } = useQueryStore();
+  const selectedTable = useQueryStore((state) => state.selectedTable);
+  const selectedColumns = useQueryStore((state) => state.selectedColumns);
+  const toggleColumn = useQueryStore((state) => state.toggleColumn);
+  const selectAllColumns = useQueryStore((state) => state.selectAllColumns);
+  const deselectAllColumns = useQueryStore((state) => state.deselectAllColumns);
 
   const columns = useTableColumns();
   const columnsNames = useColumnNames();
 
-  // 테이블이 선택 되지 않았다면?
-  if (!selectedTable) {
+  // 계산값 메모이제이션
+  const isAllSelected = useMemo(() => {
     return (
-      <div className="space-y-2">
-        <Label className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-          <Columns3 className="h-4 w-4" />
-          SELECT
-        </Label>
-        <div className="text-sm text-muted-foreground">
-          먼저 테이블을 선택하세요
-        </div>
-      </div>
+      selectedColumns.length > 0 ||
+      (selectedColumns.length === columnsNames.length &&
+        columnsNames.length > 0)
     );
-  }
+  }, [selectedColumns.length, columnsNames.length]);
 
-  const isAllSelected =
-    selectedColumns.length === columnsNames.length && columnsNames.length > 0;
-  // const isSomeSelected =
-  //   selectedColumns.length > 0 && selectedColumns.length < columnsNames.length;
+  const selectedCount = useMemo(() => {
+    return selectedColumns.length;
+  }, [selectedColumns.length]);
 
   const handleToggleAll = () => {
     if (isAllSelected) {
@@ -58,6 +53,9 @@ export default function ColumnSelector() {
       selectAllColumns(columnsNames);
     }
   };
+
+  /* 빈 상태 */
+  if (!selectedTable) return <EmptyState />;
 
   return (
     <div className="space-y-3">
@@ -69,85 +67,35 @@ export default function ColumnSelector() {
         </Label>
 
         {/* 전체 선택/해제 버튼 */}
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={handleToggleAll}
-          className="h-8 text-xs"
-        >
-          {isAllSelected ? (
-            <>
-              <Square className="h-3 w-3 mr-1" />
-              전체 해제
-            </>
-          ) : (
-            <>
-              <CheckSquare className="h-3 w-3 mr-1" />
-              전체 선택
-            </>
-          )}
-        </Button>
+        <AllSelectedButton value={isAllSelected} onToggle={handleToggleAll} />
       </div>
 
-      {/* 선택된 컬럼 개수 표시 */}
+      {/* 카운트 정보 */}
       <div className="text-xs text-muted-foreground">
-        {selectedColumns.length === 0 ? (
-          <span>선택된 컬럼 없음 (SELECT * 사용)</span>
-        ) : (
-          <span>
-            선택된 컬럼:{" "}
-            <span className="font-semibold text-foreground">
-              {selectedColumns.length}
-            </span>{" "}
-            / {columnsNames.length}
-          </span>
-        )}
+        <ColumnCountInfo
+          selectedCount={selectedCount}
+          totalCount={columnsNames.length}
+        />
       </div>
 
+      {/* 컬럼 목록 */}
       {/* 컬럼 체크박스 목록 */}
       <div className="rounded-md border p-4 space-y-3 max-h-[400px] overflow-y-auto">
-        {columns.map((column) => {
-          const isChecked = selectedColumns.includes(column.name);
-
-          return (
-            <div key={column.name} className="flex items-start space-x-3">
-              <Checkbox
-                id={`column-${column.name}`}
-                checked={isChecked}
-                onCheckedChange={() => toggleColumn(column.name)}
-              />
-              <div className="grid gap-1.5 leading-none flex-1">
-                <label
-                  htmlFor={`column-${column.name}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 cursor-pointer flex items-center gap-2 flex-wrap"
-                >
-                  <span className="font-mono">{column.name}</span>
-                  <span className="text-xs text-muted-foreground px-1.5 py-0.5 rounded bg-muted">
-                    {column.type}
-                  </span>
-                  {column.primaryKey && (
-                    <span className="text-xs bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-1.5 py-0.5 rounded font-medium">
-                      PK
-                    </span>
-                  )}
-                  {column.foreignKey && (
-                    <span className="text-xs bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200 px-1.5 py-0.5 rounded font-medium">
-                      FK
-                    </span>
-                  )}
-                </label>
-              </div>
-            </div>
-          );
-        })}
+        {columns.map((column) => (
+          <ColumnSelectorItem
+            key={column.name}
+            column={column}
+            isSelected={selectedColumns.includes(column.name)}
+            onToggle={toggleColumn}
+          />
+        ))}
       </div>
 
       {/* 안내 메시지 */}
       {selectedColumns.length === 0 && (
-        <p className="text-xs text-muted-foreground">
-          💡 컬럼을 선택하지 않으면 모든 컬럼(*)이 선택됩니다.
-        </p>
+        <HintMessage
+          msg={`컬럼을 선택하지 않으면 모든 컬럼(*)이 선택됩니다.`}
+        />
       )}
     </div>
   );

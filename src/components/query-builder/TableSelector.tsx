@@ -23,12 +23,10 @@ import { Database } from "lucide-react";
  * <TableSelector />
  */
 export default function TableSelector() {
-  const { selectedTable, setSelectedTable } = useQueryStore();
-  const tblNms = getTableNames();
+  const selectedTable = useQueryStore((state) => state.selectedTable);
+  const setSelectedTable = useQueryStore((state) => state.setSelectedTable);
 
-  const handleTableChange = (v: string) => {
-    setSelectedTable(v);
-  };
+  const tblNms = getTableNames();
 
   return (
     <div className="space-y-2">
@@ -40,7 +38,7 @@ export default function TableSelector() {
         FROM
       </Label>
 
-      <Select value={selectedTable} onValueChange={handleTableChange}>
+      <Select value={selectedTable} onValueChange={(v) => setSelectedTable(v)}>
         <SelectTrigger id="table-select" className="w-full">
           <SelectValue placeholder="테이블을 선택하세요" />
         </SelectTrigger>
@@ -52,15 +50,6 @@ export default function TableSelector() {
           ))}
         </SelectContent>
       </Select>
-
-      {selectedTable && (
-        <p className="text-xs text-muted-foreground mt-1">
-          선택된 테이블:{" "}
-          <span className="font-mono font-semibold text-foreground">
-            {selectedTable}
-          </span>
-        </p>
-      )}
     </div>
   );
 }
