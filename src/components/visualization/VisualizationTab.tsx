@@ -13,7 +13,6 @@ import BarChart from "./BarChart";
 import LineChart from "./LineChart";
 import PieChart from "./PieChart";
 import EmptyChart from "./EmptyChart";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { BarChart3, Download } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";

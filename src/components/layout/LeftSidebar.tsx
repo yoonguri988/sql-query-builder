@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Loader2, X } from "lucide-react";
+import { useEffect } from "react";
+import { X } from "lucide-react";
 import { LeftSidebarProps } from "@/types/layout";
 import DBSchemaTree from "./DBSchemaTree";
 import QueryHistory from "./QueryHistory";

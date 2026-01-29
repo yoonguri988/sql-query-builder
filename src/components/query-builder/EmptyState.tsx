@@ -1,6 +1,3 @@
-import { Columns3 } from "lucide-react";
-import { Label } from "@/components/ui/label";
-
 export default function EmptyState() {
   return (
     <div className="space-y-2">
