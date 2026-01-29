@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
 import { useDarkMode } from "@/hooks/useDarkMode";
 

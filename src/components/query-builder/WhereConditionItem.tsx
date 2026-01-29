@@ -30,7 +30,7 @@ const OPERATORS: { value: WhereOperator; label: string }[] = [
   { value: "IS NOT NULL", label: "IS NOT NULL (비어있지 않음)" },
 ];
 
-interface ConditionRowProps {
+interface Props {
   condition: WhereCondition;
   onUpdate: (id: string, updates: Partial<WhereCondition>) => void;
   onRemove: (id: string) => void;
@@ -62,12 +62,12 @@ interface ConditionRowProps {
  *   showLogicalOperator={index > 0}
  * />
  */
-export function ConditionRow({
+export function WhereConditionItem({
   condition,
   onUpdate,
   onRemove,
   showLogicalOperator = false,
-}: ConditionRowProps) {
+}: Props) {
   const columnNames = useColumnNames();
 
   // 값 입력이 필요 없는 연산자 확인

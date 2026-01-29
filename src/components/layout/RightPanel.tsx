@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Code, Database, X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
 import SQLPreview from "@/components/sql-preview/SQLPreview";
@@ -45,7 +44,7 @@ export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
         md:${isOpen ? "block" : "hidden"}
         lg:block
         fixed lg:static inset-y-0 right-0 z-40
-        w-full md:w-96 lg:w-[500px] xl:w-[600px]
+        w-full md:w-80 lg:w-[400px] xl:w-[500px]
         bg-background border-l
         flex flex-col
         overflow-hidden

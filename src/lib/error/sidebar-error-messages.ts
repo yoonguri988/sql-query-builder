@@ -1,5 +1,3 @@
-import { Globe } from "lucide-react";
-
 export interface ErrorSuggestion {
   title: string;
   suggestion: string;

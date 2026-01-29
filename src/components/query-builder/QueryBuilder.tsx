@@ -31,14 +31,7 @@ import ActionButtons from "./ActionButtons";
  * @returns
  */
 export default function QueryBuilder() {
-  const {
-    selectedTable,
-    // selectedColumns,
-    // whereConditions,
-    // orderBy,
-    // limit,
-    // generatedSQL,
-  } = useQueryStore();
+  const selectedTable = useQueryStore((state) => state.selectedTable);
 
   return (
     <div className="space-y-6">
@@ -89,52 +82,9 @@ export default function QueryBuilder() {
                 <LimitInput />
               </div>
 
-              {/* 생성된 SQL 미리보기 */}
-              {/*generatedSQL && (
-                <div className="space-y-2">
-                  <h3 className="text-lg font-semibold">6. 생성된 SQL</h3>
-                  <div className="rounded-md bg-slate-950 dark:bg-slate-900 p-4 border">
-                    <code className="text-sm text-slate-50 font-mono whitespace-pre-wrap break-all">
-                      {generatedSQL}
-                    </code>
-                  </div>
-
-                  <div className="text-xs text-muted-foreground space-y-1">
-                    <p>📊 쿼리 정보:</p>
-                    <ul className="list-disc list-inside space-y-0.5 ml-2">
-                      <li>
-                        SELECT:{" "}
-                        {selectedColumns.length === 0
-                          ? "모든 컬럼 (*)"
-                          : `${selectedColumns.length}개 컬럼`}
-                      </li>
-                      <li>FROM: {selectedTable}</li>
-                      {whereConditions.length > 0 && (
-                        <li>WHERE: {whereConditions.length}개 조건</li>
-                      )}
-                      {orderBy.length > 0 && (
-                        <li>ORDER BY: {orderBy.length}개 정렬</li>
-                      )}
-                      <li>LIMIT: {limit}행</li>
-                    </ul>
-                  </div>
-                </div>
-              )*/}
-
               {/* 액션 버튼 */}
               <ActionButtons />
             </>
-          )}
-
-          {/* 빈 상태 */}
-          {!selectedTable && (
-            <div className="text-center py-12 text-muted-foreground">
-              <Code2 className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p className="text-lg font-medium mb-2">쿼리 빌더 시작하기</p>
-              <p className="text-sm">
-                테이블을 선택하여 SQL 쿼리를 만들어보세요
-              </p>
-            </div>
           )}
         </CardContent>
       </Card>

@@ -10,7 +10,6 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { useEffect, useState } from "react";
 import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";

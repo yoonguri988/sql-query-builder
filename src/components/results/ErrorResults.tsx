@@ -7,10 +7,9 @@ import { getSQLErrorMessage } from "@/lib/error/error-messages";
 
 interface Props {
   error: string;
-  onRetry?: () => void;
 }
 
-export default function ErrorResults({ error, onRetry }: Props) {
+export default function ErrorResults({ error }: Props) {
   const errorInfo = getSQLErrorMessage(new Error(error));
 
   return (
