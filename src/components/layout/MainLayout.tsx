@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightPanel from "@/components/layout/RightPanel";
@@ -10,12 +10,21 @@ export default function MainLayout() {
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
 
+  // useCallback으로 함수 메모이제이션
+  const handleLeftSidebarToggle = useCallback(() => {
+    setShowLeftSidebar((prev) => !prev);
+  }, []);
+
+  const handleRightPanelToggle = useCallback(() => {
+    setShowRightPanel((prev) => !prev);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen">
       {/* Header */}
       <Header
-        onLeftSidebarToggle={() => setShowLeftSidebar(!showLeftSidebar)}
-        onRightPanelToggle={() => setShowRightPanel(!showRightPanel)}
+        onLeftSidebarToggle={handleLeftSidebarToggle}
+        onRightPanelToggle={handleRightPanelToggle}
       />
 
       {/* Main Content Area */}

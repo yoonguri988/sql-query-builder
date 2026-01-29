@@ -13,8 +13,9 @@ import ErrorResults from "@/components/results/ErrorResults";
 import EmptyResults from "@/components/results/EmptyResults";
 import { useQueryStore } from "@/store/query-store";
 import { useUIStore } from "@/store/ui-store";
+import { memo } from "react";
 
-export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
+function RightPanel({ isOpen, onClose }: RightPanelProps) {
   // 탭 상태 관리
   const { activeRightPanelTab, setActiveRightPanelTab } = useUIStore();
 
@@ -146,3 +147,5 @@ export default function RightPanel({ isOpen, onClose }: RightPanelProps) {
     </aside>
   );
 }
+
+export default memo(RightPanel);
