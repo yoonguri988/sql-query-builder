@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { Table } from "@tanstack/react-table";
 import { TableData } from "@/types/table";
+import { memo } from "react";
 
 /**
  * 페이지네이션 컨트롤 컴포넌트
@@ -25,7 +26,7 @@ interface PaginationControlsProps {
   table: Table<TableData>;
 }
 
-export default function PaginationControls({ table }: PaginationControlsProps) {
+function PaginationControls({ table }: PaginationControlsProps) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
   const totalRows = table.getFilteredRowModel().rows.length;
@@ -174,3 +175,4 @@ export default function PaginationControls({ table }: PaginationControlsProps) {
     </div>
   );
 }
+export default memo(PaginationControls);
