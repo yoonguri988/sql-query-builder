@@ -1,7 +1,9 @@
+import { memo } from "react";
+
 interface Props {
   totalCount: number;
 }
-export default function OrderByInfo({ totalCount }: Props) {
+function OrderByInfo({ totalCount }: Props) {
   if (totalCount === 0) return <div>정렬 없음 (기본 순서)</div>;
   else {
     return (
@@ -14,3 +16,4 @@ export default function OrderByInfo({ totalCount }: Props) {
     );
   }
 }
+export default memo(OrderByInfo);

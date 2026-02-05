@@ -1,12 +1,13 @@
 import { CheckSquare, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { memo } from "react";
 
 interface Props {
   value: boolean;
   onToggle: () => void;
 }
 
-export default function AllSelectedButton({ value, onToggle }: Props) {
+function AllSelectedButton({ value, onToggle }: Props) {
   return (
     <Button
       type="button"
@@ -29,3 +30,4 @@ export default function AllSelectedButton({ value, onToggle }: Props) {
     </Button>
   );
 }
+export default memo(AllSelectedButton);

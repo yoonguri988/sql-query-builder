@@ -1,8 +1,10 @@
+import { memo } from "react";
+
 interface Props {
   selectedCount: number;
   totalCount: number;
 }
-export default function ColumnCountInfo({ selectedCount, totalCount }: Props) {
+function ColumnCountInfo({ selectedCount, totalCount }: Props) {
   if (totalCount === 0) {
     return <span>선택된 컬럼 없음 (SELECT * 사용)</span>;
   } else {
@@ -15,3 +17,4 @@ export default function ColumnCountInfo({ selectedCount, totalCount }: Props) {
     );
   }
 }
+export default memo(ColumnCountInfo);

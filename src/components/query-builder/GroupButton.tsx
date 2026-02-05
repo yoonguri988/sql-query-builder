@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { memo } from "react";
 
 interface Props {
   name: string;
@@ -14,11 +15,7 @@ interface Props {
   onClick: () => void;
 }
 
-export default function GroupButton({
-  name,
-  variant = "outline",
-  onClick,
-}: Props) {
+function GroupButton({ name, variant = "outline", onClick }: Props) {
   return (
     <Button
       type="button"
@@ -31,3 +28,4 @@ export default function GroupButton({
     </Button>
   );
 }
+export default memo(GroupButton);

@@ -1,7 +1,9 @@
+import { memo } from "react";
+
 interface Props {
   whereCondCount: number;
 }
-export default function WhereClauseInfo({ whereCondCount }: Props) {
+function WhereClauseInfo({ whereCondCount }: Props) {
   if (whereCondCount === 0) return <div>조건 없음 (모든 행 조회)</div>;
   else {
     return (
@@ -22,3 +24,4 @@ export default function WhereClauseInfo({ whereCondCount }: Props) {
     );
   }
 }
+export default memo(WhereClauseInfo);
