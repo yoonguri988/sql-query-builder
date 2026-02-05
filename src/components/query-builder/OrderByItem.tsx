@@ -28,7 +28,7 @@ function OrderByItem({ orderBy, onUpdate, onRemove }: Props) {
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 w-full">
       {/* 컬럼 선택 */}
       <Select
         value={orderBy.column}

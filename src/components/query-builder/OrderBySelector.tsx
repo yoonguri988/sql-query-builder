@@ -83,7 +83,11 @@ function OrderBySelector() {
       {orderBy.length > 0 && (
         <div className="rounded-md border p-4 space-y-3">
           {orderBy.map((value, index) => (
-            <>
+            <div
+              key={value.id}
+              className="flex items-center justify-between gap-4"
+            >
+              {" "}
               {/* 순서 표시 */}
               <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted text-xs font-medium">
                 {index + 1}
@@ -94,7 +98,7 @@ function OrderBySelector() {
                 onUpdate={updateOrderBy}
                 onRemove={removeOrderBy}
               />
-            </>
+            </div>
           ))}
         </div>
       )}
