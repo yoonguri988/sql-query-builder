@@ -4,7 +4,7 @@ interface Props {
   selectedCount: number;
   totalCount: number;
 }
-function ColumnCountInfo({ selectedCount, totalCount }: Props) {
+export default function ColumnCountInfo({ selectedCount, totalCount }: Props) {
   if (totalCount === 0) {
     return <span>선택된 컬럼 없음 (SELECT * 사용)</span>;
   } else {
@@ -17,4 +17,3 @@ function ColumnCountInfo({ selectedCount, totalCount }: Props) {
     );
   }
 }
-export default memo(ColumnCountInfo);

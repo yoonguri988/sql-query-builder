@@ -15,7 +15,11 @@ interface Props {
   onClick: () => void;
 }
 
-function GroupButton({ name, variant = "outline", onClick }: Props) {
+export default function GroupButton({
+  name,
+  variant = "outline",
+  onClick,
+}: Props) {
   return (
     <Button
       type="button"
@@ -28,4 +32,3 @@ function GroupButton({ name, variant = "outline", onClick }: Props) {
     </Button>
   );
 }
-export default memo(GroupButton);

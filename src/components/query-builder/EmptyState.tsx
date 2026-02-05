@@ -1,6 +1,6 @@
 import { memo } from "react";
 
-function EmptyState() {
+export default function EmptyState() {
   return (
     <div className="space-y-2">
       <div className="text-sm text-muted-foreground">
@@ -9,4 +9,3 @@ function EmptyState() {
     </div>
   );
 }
-export default memo(EmptyState);

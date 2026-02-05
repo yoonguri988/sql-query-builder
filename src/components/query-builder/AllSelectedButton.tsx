@@ -7,7 +7,7 @@ interface Props {
   onToggle: () => void;
 }
 
-function AllSelectedButton({ value, onToggle }: Props) {
+export default function AllSelectedButton({ value, onToggle }: Props) {
   return (
     <Button
       type="button"
@@ -30,4 +30,3 @@ function AllSelectedButton({ value, onToggle }: Props) {
     </Button>
   );
 }
-export default memo(AllSelectedButton);
