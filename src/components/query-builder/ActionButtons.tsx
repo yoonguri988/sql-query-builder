@@ -2,6 +2,7 @@
 
 import ExecuteButton from "@/components/query-builder/ExecuteButton";
 import ResetButtons from "@/components/query-builder/ResetButtons";
+import { memo } from "react";
 
 /**
  * ActionButtons 컴포넌트
@@ -13,7 +14,7 @@ import ResetButtons from "@/components/query-builder/ResetButtons";
  *
  * @component
  */
-export default function ActionButtons() {
+function ActionButtons() {
   return (
     <div className="flex items-center justify-end gap-3 pt-4 border-t">
       {/* Execute 버튼 */}
@@ -23,3 +24,4 @@ export default function ActionButtons() {
     </div>
   );
 }
+export default memo(ActionButtons);

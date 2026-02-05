@@ -14,8 +14,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { memo } from "react";
 
-export default function ResetButtons() {
+function ResetButtons() {
   const resetAll = useQueryStore((state) => state.resetAll);
   const resetExecution = useQueryStore((state) => state.resetExecution);
   const resetWhereConditions = useQueryStore(
@@ -78,3 +79,4 @@ export default function ResetButtons() {
     </div>
   );
 }
+export default memo(ResetButtons);
