@@ -9,6 +9,7 @@ import {
 import { Button } from "../ui/button";
 import { ArrowDown, ArrowUp, X } from "lucide-react";
 import { useColumnNames } from "@/hooks/useTableColumns";
+import { memo } from "react";
 
 interface Props {
   orderBy: OrderByClause;
@@ -16,7 +17,7 @@ interface Props {
   onRemove: (id: string) => void;
 }
 
-export default function OrderByItem({ orderBy, onUpdate, onRemove }: Props) {
+function OrderByItem({ orderBy, onUpdate, onRemove }: Props) {
   const columnNames = useColumnNames();
 
   // 방향 토글
@@ -80,3 +81,4 @@ export default function OrderByItem({ orderBy, onUpdate, onRemove }: Props) {
     </div>
   );
 }
+export default memo(OrderByItem);

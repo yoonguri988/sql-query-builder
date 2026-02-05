@@ -12,7 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { AlertCircle, X } from "lucide-react";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 
 /**
  * WHERE 조건에서 사용 가능한 연산자 목록
@@ -62,7 +62,7 @@ interface Props {
  *   showLogicalOperator={index > 0}
  * />
  */
-export function WhereConditionItem({
+function WhereConditionItem({
   condition,
   onUpdate,
   onRemove,
@@ -189,3 +189,5 @@ export function WhereConditionItem({
     </>
   );
 }
+
+export default memo(WhereConditionItem);
