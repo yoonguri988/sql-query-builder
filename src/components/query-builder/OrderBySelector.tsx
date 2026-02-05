@@ -9,6 +9,7 @@ import OrderByInfo from "./OrderByInfo";
 import HintMessage from "./HintMessage";
 import UseTipMessage from "./UseTipMessage";
 import OrderByItem from "./OrderByItem";
+import { memo } from "react";
 
 /** OrderBySelector 컴포넌트
  * ORDER BY 절을 관리하는 선택기
@@ -21,7 +22,7 @@ import OrderByItem from "./OrderByItem";
  *
  * @component
  */
-export default function OrderBySelector() {
+function OrderBySelector() {
   const selectedTable = useQueryStore((state) => state.selectedTable);
   const orderBy = useQueryStore((state) => state.orderBy);
   const addOrderBy = useQueryStore((state) => state.addOrderBy);
@@ -110,3 +111,4 @@ export default function OrderBySelector() {
     </div>
   );
 }
+export default memo(OrderBySelector);

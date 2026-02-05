@@ -1,7 +1,7 @@
 "use client";
 
 import { useQueryStore } from "@/store/query-store";
-import { WhereConditionItem } from "./WhereConditionItem";
+import WhereConditionItem from "./WhereConditionItem";
 import { Label } from "@/components/ui/label";
 import { Filter } from "lucide-react";
 import { WhereCondition } from "@/types/query";
@@ -10,6 +10,7 @@ import GroupButton from "./GroupButton";
 import WhereClauseInfo from "./WhereClauseInfo";
 import HintMessage from "./HintMessage";
 import UseTipMessage from "./UseTipMessage";
+import { memo } from "react";
 
 /**
  * WhereClauseBuilder 컴포넌트
@@ -30,7 +31,7 @@ import UseTipMessage from "./UseTipMessage";
  * @example
  * <WhereClauseBuilder />
  */
-export default function WhereClauseBuilder() {
+function WhereClauseBuilder() {
   const selectedTable = useQueryStore((state) => state.selectedTable);
   const whereConditions = useQueryStore((state) => state.whereConditions);
   const addWhereCondition = useQueryStore((state) => state.addWhereCondition);
@@ -128,3 +129,4 @@ export default function WhereClauseBuilder() {
     </div>
   );
 }
+export default memo(WhereClauseBuilder);

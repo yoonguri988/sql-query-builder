@@ -5,7 +5,7 @@ import { Columns3 } from "lucide-react";
 import HintMessage from "@/components/query-builder/HintMessage";
 import EmptyState from "@/components/query-builder/EmptyState";
 import ColumnCountInfo from "./ColumnCountInfo";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import ColumnSelectorItem from "./ColumnSelectorItem";
 import AllSelectedButton from "./AllSelectedButton";
 
@@ -23,7 +23,7 @@ import AllSelectedButton from "./AllSelectedButton";
  * @example
  * <ColumnSelector />
  */
-export default function ColumnSelector() {
+function ColumnSelector() {
   const selectedTable = useQueryStore((state) => state.selectedTable);
   const selectedColumns = useQueryStore((state) => state.selectedColumns);
   const toggleColumn = useQueryStore((state) => state.toggleColumn);
@@ -100,3 +100,4 @@ export default function ColumnSelector() {
     </div>
   );
 }
+export default memo(ColumnSelector);
