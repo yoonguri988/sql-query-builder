@@ -1,6 +1,6 @@
 import { TableColumn } from "@/types/database";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useCallback } from "react";
+import { memo, useCallback } from "react";
 
 interface Props {
   column: TableColumn;
@@ -8,21 +8,13 @@ interface Props {
   onToggle: (columnName: string) => void;
 }
 
-export default function ColumnSelectorItem({
-  column,
-  isSelected,
-  onToggle,
-}: Props) {
-  // 개별 아이템의 토글 핸들러 메모이제이션
-  const handleToggle = useCallback(() => {
-    onToggle(column.name);
-  }, [column.name, onToggle]);
+function ColumnSelectorItem({ column, isSelected, onToggle }: Props) {
   return (
     <div key={column.name} className="flex items-start space-x-3">
       <Checkbox
         id={`column-${column.name}`}
         checked={isSelected}
-        onCheckedChange={handleToggle}
+        onCheckedChange={() => onToggle(column.name)}
       />
       <div className="grid gap-1.5 leading-none flex-1">
         <label
@@ -48,3 +40,5 @@ export default function ColumnSelectorItem({
     </div>
   );
 }
+
+export default memo(ColumnSelectorItem);
