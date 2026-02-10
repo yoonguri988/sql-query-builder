@@ -21,14 +21,24 @@ import { useCopyToClipboard } from "@/hooks/useCopyToClipboard";
 import { useToast } from "@/hooks/use-toast";
 import ExecuteButton from "@/components/query-builder/ExecuteButton";
 import { useTheme } from "next-themes";
+import { memo, useMemo } from "react";
 
 interface SQLPreviewProps {
   onExecute?: () => void; // Results 탭 활성화 콜백
 }
 
-export default function SQLPreview({ onExecute }: SQLPreviewProps) {
+function SQLPreview({ onExecute }: SQLPreviewProps) {
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const error = useQueryStore((state) => state.error);
+
+  // 계산 메모이제이션
+  const lineCount = useMemo(() => {
+    return generatedSQL ? generatedSQL.split("\n").length : 0;
+  }, [generatedSQL]);
+
+  const charCount = useMemo(() => {
+    return generatedSQL ? generatedSQL.length : 0;
+  }, [generatedSQL]);
 
   // 복사 Hook 사용
   const { isCopied, copyToClipboard } = useCopyToClipboard();
@@ -184,8 +194,8 @@ export default function SQLPreview({ onExecute }: SQLPreviewProps) {
 
         {/* SQL 줄 수 표시 */}
         <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-          <span>{generatedSQL.split("\n").length} 줄</span>
-          <span>{generatedSQL.length} 문자</span>
+          <span>{lineCount} 줄</span>
+          <span>{charCount} 문자</span>
         </div>
       </div>
 
@@ -194,3 +204,4 @@ export default function SQLPreview({ onExecute }: SQLPreviewProps) {
     </div>
   );
 }
+export default memo(SQLPreview);
