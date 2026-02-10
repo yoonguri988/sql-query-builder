@@ -16,28 +16,6 @@ import { useUIStore } from "@/store/ui-store";
 import { memo } from "react";
 
 function RightPanel({ isOpen, onClose }: RightPanelProps) {
-  // 탭 상태 관리
-  const { activeRightPanelTab, setActiveRightPanelTab } = useUIStore();
-
-  // query-store에서 가져오기
-  const queryResult = useQueryStore((state) => state.queryResult);
-  const executionMetadata = useQueryStore((state) => state.executionMetadata);
-  const isExecuting = useQueryStore((state) => state.isExecuting);
-
-  // ExecutionResult 형태로 재구성
-  const queryResults =
-    queryResult && executionMetadata
-      ? {
-          data: queryResult,
-          metadata: executionMetadata,
-        }
-      : null;
-
-  // Results 탭 활성화 핸들러
-  const handleExecute = () => {
-    setActiveRightPanelTab("results");
-  };
-
   return (
     <aside
       className={`
@@ -45,7 +23,7 @@ function RightPanel({ isOpen, onClose }: RightPanelProps) {
         md:${isOpen ? "block" : "hidden"}
         lg:block
         fixed lg:static inset-y-0 right-0 z-40
-        w-full md:w-80 lg:w-[400px] xl:w-[500px]
+        w-full md:w-72 lg:w-[300px] xl:w-[400px]
         bg-background border-l
         flex flex-col
         overflow-hidden
@@ -64,85 +42,19 @@ function RightPanel({ isOpen, onClose }: RightPanelProps) {
         </Button>
       </div>
 
+      {/* 데스크톱 헤더 */}
+      <div className="hidden lg:block m-4 mb-0">
+        <div className="inline-flex h-9 items-center justify-center rounded-lg bg-muted p-1 text-muted-foreground w-full">
+          <div className="inline-flex items-center justify-center whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow gap-2 bg-background text-foreground shadow w-full">
+            <Code className="h-4 w-4" />
+            SQL Preview
+          </div>
+        </div>
+      </div>
+
       {/* 스크롤 가능한 컨텐츠 영역 */}
-      <div className="flex-1 custom-scrollbar">
-        <Tabs
-          value={activeRightPanelTab}
-          onValueChange={(value) =>
-            setActiveRightPanelTab(value as "sql" | "results")
-          }
-          className="h-full flex flex-col"
-        >
-          <TabsList className="grid w-full grid-cols-2 m-4 mb-0">
-            <TabsTrigger value="sql" className="gap-2">
-              <Code className="h-4 w-4" />
-              SQL Preview
-            </TabsTrigger>
-            <TabsTrigger value="results" className="gap-2">
-              <Database className="h-4 w-4" />
-              Results
-              {queryResults && (
-                <span className="ml-1 text-xs text-muted-foreground">
-                  ({queryResults.data.rowCount})
-                </span>
-              )}
-            </TabsTrigger>
-          </TabsList>
-
-          {/* SQL Preview 탭 */}
-          <TabsContent value="sql" className="flex-1 overflow-auto p-4 m-0">
-            <SQLPreview onExecute={handleExecute} />
-          </TabsContent>
-
-          {/* Results 탭 */}
-          <TabsContent value="results" className="flex-1 overflow-auto p-4 m-0">
-            {/* 로딩 상태 */}
-            {isExecuting && <LoadingResults />}
-
-            {/* 에러 상태 */}
-            {!isExecuting && queryResults?.metadata.status === "error" && (
-              <div className="space-y-4">
-                <ExecutionInfo metadata={queryResults.metadata} />
-                <ErrorResults
-                  error={queryResults.metadata.error || "Unknown error"}
-                />
-              </div>
-            )}
-
-            {/* 빈 결과 (아직 실행 안 함) */}
-            {!isExecuting && !queryResults && (
-              <EmptyResults message="쿼리를 실행하여 결과를 확인하세요." />
-            )}
-
-            {/* 빈 결과 (실행 성공했지만 데이터 없음) */}
-            {!isExecuting &&
-              queryResults?.metadata.status === "success" &&
-              queryResults.data.rowCount === 0 && (
-                <div className="space-y-4">
-                  <ExecutionInfo metadata={queryResults.metadata} />
-                  <EmptyResults message="쿼리가 성공적으로 실행되었지만 결과가 없습니다." />
-                </div>
-              )}
-
-            {/* 결과 테이블 */}
-            {!isExecuting &&
-              queryResults?.metadata.status === "success" &&
-              queryResults.data.rowCount > 0 && (
-                <div className="space-y-4">
-                  {/* 실행 정보 및 다운로드 버튼 */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex-1">
-                      <ExecutionInfo metadata={queryResults.metadata} />
-                    </div>
-                    <DownloadButton data={queryResults.data.data} />
-                  </div>
-
-                  {/* 결과 테이블 */}
-                  <ResultsTable data={queryResults.data.data} />
-                </div>
-              )}
-          </TabsContent>
-        </Tabs>
+      <div className="flex-1 overflow-auto p-4 custom-scrollbar">
+        <SQLPreview />
       </div>
     </aside>
   );
