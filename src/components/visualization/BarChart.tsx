@@ -14,13 +14,14 @@ import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { memo } from "react";
 
 interface BarChartProps {
   data: ChartData[];
   config: ChartConfig;
 }
 
-export default function BarChart({ data, config }: BarChartProps) {
+function BarChart({ data, config }: BarChartProps) {
   const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
@@ -55,3 +56,4 @@ export default function BarChart({ data, config }: BarChartProps) {
     </ResponsiveContainer>
   );
 }
+export default memo(BarChart);
