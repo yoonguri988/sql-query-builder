@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { memo, useCallback, useMemo, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 import { useUIStore } from "@/store/ui-store";
 import { useTheme } from "next-themes";
@@ -14,16 +14,19 @@ import {
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-export default function SQLEditor() {
+function SQLEditor() {
   const [sqlText, setSqlText] = useState("");
   const { theme } = useTheme();
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const { setActiveRightPanelTab } = useUIStore();
 
-  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
+  // 테마 스타일 메모이제이션
+  const syntaxStyle = useMemo(() => {
+    return theme === "dark" ? vscDarkPlus : vs;
+  }, [theme]);
 
-  const handleExecute = async () => {
+  const handleExecute = useCallback(async () => {
     if (!sqlText.trim()) return;
 
     // SQL을 query-store에 설정하고 실행
@@ -36,18 +39,36 @@ export default function SQLEditor() {
 
     // Results 탭으로 이동
     setActiveRightPanelTab("results");
-  };
+  }, [sqlText, executeQuery, setActiveRightPanelTab]);
 
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     setSqlText("");
-  };
+  }, []);
 
   // Query Builder에서 불러오기
-  const handleLoadFromBuilder = () => {
+  const handleLoadFromBuilder = useCallback(() => {
     if (generatedSQL) {
       setSqlText(generatedSQL);
     }
-  };
+  }, [generatedSQL]);
+
+  // SyntaxHighlighter 최적화
+  const syntaxPreview = useMemo(() => {
+    if (!sqlText) return null;
+
+    return (
+      <SyntaxHighlighter
+        language="sql"
+        style={syntaxStyle}
+        customStyle={{
+          margin: 0,
+          borderRadius: 0,
+        }}
+      >
+        {sqlText}
+      </SyntaxHighlighter>
+    );
+  }, [sqlText, syntaxStyle]);
 
   return (
     <div className="space-y-4">
@@ -95,16 +116,7 @@ export default function SQLEditor() {
             <div className="space-y-2">
               <label className="text-sm font-medium">Preview</label>
               <div className="border rounded-lg overflow-hidden">
-                <SyntaxHighlighter
-                  language="sql"
-                  style={syntaxStyle}
-                  customStyle={{
-                    margin: 0,
-                    borderRadius: 0,
-                  }}
-                >
-                  {sqlText}
-                </SyntaxHighlighter>
+                {syntaxPreview}
               </div>
             </div>
           )}
@@ -113,3 +125,4 @@ export default function SQLEditor() {
     </div>
   );
 }
+export default memo(SQLEditor);
