@@ -9,12 +9,15 @@ import LoadingResults from "@/components/results/LoadingResults";
 import ErrorResults from "@/components/results/ErrorResults";
 import EmptyResults from "@/components/results/EmptyResults";
 import VisualizationTab from "@/components/visualization/VisualizationTab";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 
-export default function MainContent({ isRightPanelOpen }: MainContentProps) {
+function MainContent({ isRightPanelOpen }: MainContentProps) {
   const [activeTab, setActiveTab] = useState<string>("builder");
-  const { queryResult, isExecuting, error } = useQueryStore();
+
+  const queryResult = useQueryStore((state) => state.queryResult);
+  const isExecuting = useQueryStore((state) => state.isExecuting);
+  const error = useQueryStore((state) => state.error);
 
   // 쿼리 결과가 생성되면 자동으로 Results 탭으로 전환
   useEffect(() => {
@@ -135,3 +138,4 @@ export default function MainContent({ isRightPanelOpen }: MainContentProps) {
     </main>
   );
 }
+export default memo(MainContent);

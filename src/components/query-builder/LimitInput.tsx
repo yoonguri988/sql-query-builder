@@ -1,5 +1,5 @@
 import { useQueryStore } from "@/store/query-store";
-import { useEffect, useState } from "react";
+import { memo, useEffect, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,7 +18,7 @@ import HintMessage from "./HintMessage";
  *
  * @component
  */
-export default function LimitInput() {
+function LimitInput() {
   const selectedTable = useQueryStore((state) => state.selectedTable);
   const limit = useQueryStore((state) => state.limit);
   const setLimit = useQueryStore((state) => state.setLimit);
@@ -116,3 +116,4 @@ export default function LimitInput() {
     </div>
   );
 }
+export default memo(LimitInput);

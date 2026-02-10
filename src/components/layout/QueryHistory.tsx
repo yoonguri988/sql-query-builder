@@ -15,27 +15,24 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { History, Trash2, RotateCcw, Clock } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
-import { ko } from "date-fns/locale";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  vscDarkPlus,
-  vs,
-} from "react-syntax-highlighter/dist/esm/styles/prism";
+import { History, Trash2 } from "lucide-react";
 import { useQueryStore } from "@/store/query-store";
 import { useToast } from "@/hooks/use-toast";
 import { useUIStore } from "@/store/ui-store";
-import { useTheme } from "next-themes";
+import { memo } from "react";
+import QueryHistoryItem from "./QueryHistoryItem";
 
-export default function QueryHistory() {
-  const { history, clearHistory, removeHistoryItem } = useHistoryStore();
-  const { restoreFromHistory } = useQueryStore();
-  const { setActiveRightPanelTab } = useUIStore();
+function QueryHistory() {
+  const history = useHistoryStore((state) => state.history);
+  const clearHistory = useHistoryStore((state) => state.clearHistory);
+  const removeHistoryItem = useHistoryStore((state) => state.removeHistoryItem);
+
+  const restoreFromHistory = useQueryStore((state) => state.restoreFromHistory);
+  const setActiveRightPanelTab = useUIStore(
+    (state) => state.setActiveRightPanelTab
+  );
+
   const { toast } = useToast();
-  const { theme } = useTheme();
-  // 다크모드에 따라 스타일 선택
-  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
 
   const handleRestore = (id: string) => {
     const item = useHistoryStore.getState().getHistoryById(id);
@@ -97,75 +94,12 @@ export default function QueryHistory() {
         ) : (
           <div className="p-4 space-y-3">
             {history.map((item) => (
-              <div
+              <QueryHistoryItem
                 key={item.id}
-                className="border rounded-lg p-3 space-y-2 hover:bg-accent/50 transition-colors"
-              >
-                <div className="font-mono text-xs bg-muted p-2 rounded overflow-x-auto">
-                  <SyntaxHighlighter
-                    language="sql"
-                    style={syntaxStyle}
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: "0.5rem",
-                      fontSize: "0.875rem",
-                      padding: "1rem",
-                      maxHeight: "500px",
-                      maxWidth: "230px",
-                      overflow: "auto",
-                    }}
-                    showLineNumbers={true}
-                    wrapLines={true}
-                  >
-                    {item.sql}
-                  </SyntaxHighlighter>
-                </div>
-
-                <div className="flex items-center justify-between text-xs text-muted-foreground">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-3 w-3" />
-                    <span>
-                      {formatDistanceToNow(item.timestamp, {
-                        addSuffix: true,
-                        locale: ko,
-                      })}
-                    </span>
-                  </div>
-                  <Badge
-                    variant={
-                      item.status === "success" ? "default" : "destructive"
-                    }
-                    className="text-xs"
-                  >
-                    {item.status === "success"
-                      ? `${item.rowCount} rows`
-                      : "Error"}
-                  </Badge>
-                </div>
-
-                <div className="text-xs text-muted-foreground">
-                  {item.executionTime}ms
-                </div>
-
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="flex-1"
-                    onClick={() => handleRestore(item.id)}
-                  >
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    복원
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => removeHistoryItem(item.id)}
-                  >
-                    <Trash2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              </div>
+                item={item}
+                onClick={handleRestore}
+                onDelete={removeHistoryItem}
+              />
             ))}
           </div>
         )}
@@ -173,3 +107,5 @@ export default function QueryHistory() {
     </div>
   );
 }
+
+export default memo(QueryHistory);

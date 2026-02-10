@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/table";
 import { formatCellValue } from "@/lib/helper";
 import useResultColumns from "@/hooks/useResultColumns";
-import { useMemo, useState } from "react";
+import { memo, useMemo, useState } from "react";
 import SortingIcon from "./SortingIcon";
 import PaginationControls from "./PaginationControls";
 import { cn } from "@/lib/utils";
@@ -32,7 +32,7 @@ interface ResultsTableProps {
 /**
  * SQL 쿼리 결과를 표시하는 테이블 컴포넌트
  */
-export default function ResultsTable({ data: rawData }: ResultsTableProps) {
+function ResultsTable({ data: rawData }: ResultsTableProps) {
   // 정렬 상태 관리
   const [sorting, setSorting] = useState<SortingState>([]);
   // 페이지네이션 상태
@@ -240,3 +240,4 @@ export default function ResultsTable({ data: rawData }: ResultsTableProps) {
     </div>
   );
 }
+export default memo(ResultsTable);

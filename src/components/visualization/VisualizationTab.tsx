@@ -2,7 +2,7 @@
 
 import { useQueryStore } from "@/store/query-store";
 import { useChartStore } from "@/store/chart-store";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useEffect, useMemo, useRef, useState } from "react";
 import {
   analyzeQueryResult,
   recommendChartAxes,
@@ -21,7 +21,7 @@ import { downloadChartAsPNG } from "@/lib/chart/chart-download";
 import ChartGuide from "./ChartGuide";
 import NotAxisChart from "./NotAxisChart";
 
-export default function VisualizationTab() {
+function VisualizationTab() {
   const queryResult = useQueryStore((state) => state.queryResult);
   const { chartConfig, setXAxis, setYAxis } = useChartStore();
   /** 차트 영역을 참조 */
@@ -175,3 +175,5 @@ export default function VisualizationTab() {
     </Card>
   );
 }
+
+export default memo(VisualizationTab);

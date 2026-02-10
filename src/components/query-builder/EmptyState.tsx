@@ -1,3 +1,5 @@
+import { memo } from "react";
+
 export default function EmptyState() {
   return (
     <div className="space-y-2">

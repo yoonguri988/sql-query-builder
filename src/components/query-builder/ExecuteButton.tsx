@@ -5,6 +5,7 @@ import { Play, Loader2 } from "lucide-react";
 import { useQueryStore } from "@/store/query-store";
 import { useToast } from "@/hooks/use-toast";
 import { useHistoryStore } from "@/store/history-store";
+import { memo } from "react";
 
 interface ExecuteButtonProps {
   onExecute?: () => void; // Results 탭 활성화 콜백
@@ -13,7 +14,7 @@ interface ExecuteButtonProps {
 /**
  * SQL 실행 버튼 컴포넌트
  */
-export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
+function ExecuteButton({ onExecute }: ExecuteButtonProps) {
   const { toast } = useToast();
 
   // Query Store
@@ -151,3 +152,4 @@ export default function ExecuteButton({ onExecute }: ExecuteButtonProps) {
     </Button>
   );
 }
+export default memo(ExecuteButton);

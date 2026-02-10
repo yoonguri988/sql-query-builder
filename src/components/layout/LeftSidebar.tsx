@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { memo, useEffect } from "react";
 import { X } from "lucide-react";
 import { LeftSidebarProps } from "@/types/layout";
 import DBSchemaTree from "./DBSchemaTree";
@@ -12,10 +12,7 @@ import { Database, History } from "lucide-react";
 import SidebarLoading from "./SidebarLoading";
 import SidebarError from "./SidebarError";
 
-export default function LeftSidebar({
-  isOpen = true,
-  onClose,
-}: LeftSidebarProps) {
+function LeftSidebar({ isOpen = true, onClose }: LeftSidebarProps) {
   const { initialize, isInitialized, isLoading, error } = useDBStore();
 
   useEffect(() => {
@@ -75,3 +72,5 @@ export default function LeftSidebar({
     </aside>
   );
 }
+
+export default memo(LeftSidebar);

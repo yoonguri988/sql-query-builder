@@ -12,13 +12,14 @@ import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { memo } from "react";
 
 interface PieChartProps {
   data: ChartData[];
   config: ChartConfig;
 }
 
-export default function PieChart({ data, config }: PieChartProps) {
+function PieChart({ data, config }: PieChartProps) {
   const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
@@ -54,3 +55,4 @@ export default function PieChart({ data, config }: PieChartProps) {
     </ResponsiveContainer>
   );
 }
+export default memo(PieChart);

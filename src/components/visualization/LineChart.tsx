@@ -14,13 +14,14 @@ import { getChartColors } from "@/lib/chart/chart-theme";
 import CustomTooltip from "./CustomTooltip";
 import { ChartConfig, ChartData } from "@/types/chart";
 import { useDarkMode } from "@/hooks/useDarkMode";
+import { memo } from "react";
 
 interface LineChartProps {
   data: ChartData[];
   config: ChartConfig;
 }
 
-export default function LineChart({ data, config }: LineChartProps) {
+function LineChart({ data, config }: LineChartProps) {
   const isDark = useDarkMode();
   const colors = config.colors || getChartColors(isDark).primary;
   const themeColors = getChartColors(isDark);
@@ -61,3 +62,4 @@ export default function LineChart({ data, config }: LineChartProps) {
     </ResponsiveContainer>
   );
 }
+export default memo(LineChart);
