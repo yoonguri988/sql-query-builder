@@ -5,14 +5,10 @@ import { useQueryStore } from "@/store/query-store";
 import { useUIStore } from "@/store/ui-store";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Play, RotateCcw, Download } from "lucide-react";
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import {
-  vscDarkPlus,
-  vs,
-} from "react-syntax-highlighter/dist/esm/styles/prism";
+import Editor, { OnMount } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 
 function SQLEditor() {
   const [sqlText, setSqlText] = useState("");
@@ -20,11 +16,6 @@ function SQLEditor() {
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const { setActiveRightPanelTab } = useUIStore();
-
-  // 테마 스타일 메모이제이션
-  const syntaxStyle = useMemo(() => {
-    return theme === "dark" ? vscDarkPlus : vs;
-  }, [theme]);
 
   const handleExecute = useCallback(async () => {
     if (!sqlText.trim()) return;
@@ -52,50 +43,105 @@ function SQLEditor() {
     }
   }, [generatedSQL]);
 
-  // SyntaxHighlighter 최적화
-  const syntaxPreview = useMemo(() => {
-    if (!sqlText) return null;
+  // 에디터 값 변경 핸들러
+  const handleEditorChange = useCallback((value: string | undefined) => {
+    setSqlText(value || "");
+  }, []);
 
-    return (
-      <SyntaxHighlighter
-        language="sql"
-        style={syntaxStyle}
-        customStyle={{
-          margin: 0,
-          borderRadius: 0,
-        }}
-      >
-        {sqlText}
-      </SyntaxHighlighter>
-    );
-  }, [sqlText, syntaxStyle]);
+  // 에디터 마운트 핸들러
+  const handleEditorDidMount: OnMount = useCallback(
+    (editor: editor.IStandaloneCodeEditor) => {
+      // 에디터 옵션 설정
+      editor.updateOptions({
+        minimap: { enabled: false },
+        fontSize: 14,
+        lineNumbers: "on",
+        scrollBeyondLastLine: false,
+        automaticLayout: true,
+        wordWrap: "on",
+        wrappingIndent: "indent",
+        formatOnPaste: true,
+        formatOnType: true,
+      });
+
+      // Ctrl+Enter 또는 Cmd+Enter로 쿼리 실행
+      editor.addCommand(
+        // Monaco KeyMod과 KeyCode 사용
+        2048 | 3, // CtrlCmd (2048) + Enter (3)
+        () => {
+          const currentValue = editor.getValue();
+          if (currentValue.trim()) {
+            setSqlText(currentValue);
+            // 실행 함수 호출을 위해 setTimeout 사용
+            setTimeout(() => {
+              if (currentValue.trim()) {
+                useQueryStore.setState({
+                  generatedSQL: currentValue.trim(),
+                });
+                useQueryStore.getState().executeQuery();
+                useUIStore.getState().setActiveRightPanelTab("results");
+              }
+            }, 0);
+          }
+        }
+      );
+    },
+    []
+  );
 
   return (
     <div className="space-y-4">
       <Card>
         <CardHeader>
-          <CardTitle>SQL Editor</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>SQL Editor</CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleLoadFromBuilder}
+              disabled={!generatedSQL}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Query Builder에서 불러오기
+            </Button>
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          {/* SQL 입력 영역 */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium">SQL Query</label>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleLoadFromBuilder}
-                disabled={!generatedSQL}
-              >
-                <Download className="h-4 w-4 mr-2" />
-                Query Builder에서 불러오기
-              </Button>
-            </div>
-            <Textarea
+          {/* Monaco Editor */}
+          <div className="border rounded-lg overflow-hidden">
+            <Editor
+              height="400px"
+              defaultLanguage="sql"
+              language="sql"
               value={sqlText}
-              onChange={(e) => setSqlText(e.target.value)}
-              placeholder="SELECT * FROM users WHERE age > 18 ORDER BY name ASC LIMIT 10;"
-              className="font-mono min-h-[200px]"
+              onChange={handleEditorChange}
+              onMount={handleEditorDidMount}
+              theme={theme === "dark" ? "vs-dark" : "vs"}
+              options={{
+                selectOnLineNumbers: true,
+                roundedSelection: false,
+                readOnly: false,
+                cursorStyle: "line",
+                automaticLayout: true,
+                minimap: { enabled: false },
+                scrollbar: {
+                  vertical: "auto",
+                  horizontal: "auto",
+                },
+                fontSize: 14,
+                lineNumbers: "on",
+                wordWrap: "on",
+                formatOnPaste: true,
+                formatOnType: true,
+                suggestOnTriggerCharacters: true,
+                quickSuggestions: true,
+                tabSize: 2,
+              }}
+              loading={
+                <div className="flex items-center justify-center h-[400px]">
+                  Loading editor...
+                </div>
+              }
             />
           </div>
 
@@ -103,7 +149,7 @@ function SQLEditor() {
           <div className="flex gap-2">
             <Button onClick={handleExecute} disabled={!sqlText.trim()}>
               <Play className="h-4 w-4 mr-2" />
-              실행
+              실행 (Ctrl+Enter)
             </Button>
             <Button variant="outline" onClick={handleReset}>
               <RotateCcw className="h-4 w-4 mr-2" />
@@ -111,15 +157,16 @@ function SQLEditor() {
             </Button>
           </div>
 
-          {/* 미리보기 */}
-          {sqlText && (
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Preview</label>
-              <div className="border rounded-lg overflow-hidden">
-                {syntaxPreview}
-              </div>
-            </div>
-          )}
+          {/* 도움말 */}
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p>
+              • Ctrl+Enter (또는 Cmd+Enter)를 눌러 쿼리를 빠르게 실행할 수
+              있습니다
+            </p>
+            <p>• Ctrl+Space: 자동완성</p>
+            <p>• Alt+Shift+F: 코드 포맷팅</p>
+            <p>• Ctrl+F: 찾기, Ctrl+H: 바꾸기</p>
+          </div>
         </CardContent>
       </Card>
     </div>
