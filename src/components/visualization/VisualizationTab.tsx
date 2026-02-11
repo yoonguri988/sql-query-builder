@@ -23,11 +23,12 @@ import NotAxisChart from "./NotAxisChart";
 
 function VisualizationTab() {
   const queryResult = useQueryStore((state) => state.queryResult);
-  const { chartConfig, setXAxis, setYAxis } = useChartStore();
+  const { chartConfig, setXAxis, setYAxis, resetChartConfig } = useChartStore();
   /** 차트 영역을 참조 */
   const chartRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const { toast } = useToast();
+  const prevQueryResultRef = useRef<typeof queryResult>(null);
 
   /** 성능 최적화: 쿼리 결과가 변경될 때만 재계산 */
   const columnInfos = useMemo(() => {
@@ -47,6 +48,16 @@ function VisualizationTab() {
     }
     return transformToChartData(queryResult.data); // 차트 데이터 변환
   }, [queryResult]);
+
+  useEffect(() => {
+    const hasNewResult =
+      queryResult && queryResult !== prevQueryResultRef.current;
+
+    if (hasNewResult) {
+      resetChartConfig();
+      prevQueryResultRef.current = queryResult;
+    }
+  }, [queryResult, resetChartConfig]);
 
   /** queryResult 변경시 자동으로 리렌더링
    * - chartConfig.xAxis와 chartConfig.yAxis만 확인

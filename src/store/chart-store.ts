@@ -60,5 +60,5 @@ export const useChartStore = create<ChartState>((set) => ({
       chartConfig: { ...state.chartConfig, showGrid: show },
     })),
 
-  resetChartConfig: () => set({ chartConfig: defaultConfig }),
+  resetChartConfig: () => set({ chartConfig: { ...defaultConfig } }),
 }));
