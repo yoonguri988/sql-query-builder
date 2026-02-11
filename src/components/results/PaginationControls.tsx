@@ -28,26 +28,12 @@ interface PaginationControlsProps {
 export default function PaginationControls({ table }: PaginationControlsProps) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
-  const totalRows = table.getFilteredRowModel().rows.length;
   const pageCount = table.getPageCount();
-
-  // 현재 페이지의 시작/끝 행 번호
-  const startRow = pageIndex * pageSize + 1;
-  const endRow = Math.min((pageIndex + 1) * pageSize, totalRows);
 
   return (
     <div className="flex flex-col gap-4 px-4 py-4 border-t border-border bg-muted/30 sm:flex-row sm:items-center sm:justify-between">
       {/* 좌측: 행 개수 정보 */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-        {/* 현재 표시 중인 행 정보 */}
-        {/* <div className="text-sm text-muted-foreground">
-          Showing{" "}
-          <span className="font-medium text-foreground">{startRow}</span> -{" "}
-          <span className="font-medium text-foreground">{endRow}</span> of{" "}
-          <span className="font-medium text-foreground">{totalRows}</span>{" "}
-          results
-        </div> */}
-
         {/* 페이지 크기 선택 */}
         <div className="flex items-center gap-2">
           <label

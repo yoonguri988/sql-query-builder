@@ -10,7 +10,7 @@ import { Loader2, AlertCircle } from "lucide-react";
  * 앱 시작 시 SQL.js를 로드하고 샘플 데이터로 데이터베이스를 초기화합니다
  */
 export default function DatabaseInitializer() {
-  const { database, isInitialized, error, initialize } = useDBStore();
+  const { isInitialized, error, initialize } = useDBStore();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

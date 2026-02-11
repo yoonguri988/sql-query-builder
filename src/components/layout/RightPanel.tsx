@@ -1,18 +1,9 @@
 "use client";
 
-import { Code, Database, X } from "lucide-react";
+import { Code, X } from "lucide-react";
 import { RightPanelProps } from "@/types/layout";
 import SQLPreview from "@/components/sql-preview/SQLPreview";
-import ExecutionInfo from "@/components/sql-preview/ExecutionInfo";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import DownloadButton from "@/components/results/DownloadButton";
-import ResultsTable from "@/components/results/ResultsTable";
-import LoadingResults from "@/components/results/LoadingResults";
-import ErrorResults from "@/components/results/ErrorResults";
-import EmptyResults from "@/components/results/EmptyResults";
-import { useQueryStore } from "@/store/query-store";
-import { useUIStore } from "@/store/ui-store";
 import { memo } from "react";
 
 function RightPanel({ isOpen, onClose }: RightPanelProps) {

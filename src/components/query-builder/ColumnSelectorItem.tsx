@@ -1,6 +1,6 @@
 import { TableColumn } from "@/types/database";
 import { Checkbox } from "@/components/ui/checkbox";
-import { memo, useCallback } from "react";
+import { memo } from "react";
 
 interface Props {
   column: TableColumn;

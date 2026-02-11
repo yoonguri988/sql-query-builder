@@ -1,6 +1,5 @@
 import { CheckSquare, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { memo } from "react";
 
 interface Props {
   value: boolean;
