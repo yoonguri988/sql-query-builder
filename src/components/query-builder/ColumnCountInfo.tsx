@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 interface Props {
   selectedCount: number;
   totalCount: number;

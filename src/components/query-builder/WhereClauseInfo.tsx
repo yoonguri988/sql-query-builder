@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 interface Props {
   whereCondCount: number;
 }

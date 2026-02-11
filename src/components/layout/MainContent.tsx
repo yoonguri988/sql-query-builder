@@ -11,13 +11,25 @@ import EmptyResults from "@/components/results/EmptyResults";
 import VisualizationTab from "@/components/visualization/VisualizationTab";
 import { memo, useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
+import ExecutionInfo from "../sql-preview/ExecutionInfo";
+import DownloadButton from "../results/DownloadButton";
 
 function MainContent({ isRightPanelOpen }: MainContentProps) {
   const [activeTab, setActiveTab] = useState<string>("builder");
 
   const queryResult = useQueryStore((state) => state.queryResult);
+  const executionMetadata = useQueryStore((state) => state.executionMetadata);
   const isExecuting = useQueryStore((state) => state.isExecuting);
   const error = useQueryStore((state) => state.error);
+
+  // ExecutionResult 형태로 재구성
+  const queryResults =
+    queryResult && executionMetadata
+      ? {
+          data: queryResult,
+          metadata: executionMetadata,
+        }
+      : null;
 
   // 쿼리 결과가 생성되면 자동으로 Results 탭으로 전환
   useEffect(() => {
@@ -116,10 +128,20 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
 
               {/* 결과 테이블 */}
               {!isExecuting &&
-                !error &&
-                queryResult &&
-                queryResult.rowCount > 0 && (
-                  <ResultsTable data={queryResult.data} />
+                queryResults?.metadata.status === "success" &&
+                queryResults.data.rowCount > 0 && (
+                  <div className="space-y-4">
+                    {/* 실행 정보 및 다운로드 버튼 */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <ExecutionInfo metadata={queryResults.metadata} />
+                      </div>
+                      <DownloadButton data={queryResults.data.data} />
+                    </div>
+
+                    {/* 결과 테이블 */}
+                    <ResultsTable data={queryResults.data.data} />
+                  </div>
                 )}
             </div>
           </TabsContent>

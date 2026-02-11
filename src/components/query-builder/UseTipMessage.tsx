@@ -1,5 +1,4 @@
 import { Lightbulb } from "lucide-react";
-import { memo } from "react";
 
 interface Prop {
   msg?: string;

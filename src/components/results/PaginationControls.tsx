@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/select";
 import { Table } from "@tanstack/react-table";
 import { TableData } from "@/types/table";
-import { memo } from "react";
 
 /**
  * 페이지네이션 컨트롤 컴포넌트
@@ -26,36 +25,22 @@ interface PaginationControlsProps {
   table: Table<TableData>;
 }
 
-function PaginationControls({ table }: PaginationControlsProps) {
+export default function PaginationControls({ table }: PaginationControlsProps) {
   const pageIndex = table.getState().pagination.pageIndex;
   const pageSize = table.getState().pagination.pageSize;
-  const totalRows = table.getFilteredRowModel().rows.length;
   const pageCount = table.getPageCount();
-
-  // 현재 페이지의 시작/끝 행 번호
-  const startRow = pageIndex * pageSize + 1;
-  const endRow = Math.min((pageIndex + 1) * pageSize, totalRows);
 
   return (
     <div className="flex flex-col gap-4 px-4 py-4 border-t border-border bg-muted/30 sm:flex-row sm:items-center sm:justify-between">
       {/* 좌측: 행 개수 정보 */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6">
-        {/* 현재 표시 중인 행 정보 */}
-        <div className="text-sm text-muted-foreground">
-          Showing{" "}
-          <span className="font-medium text-foreground">{startRow}</span> -{" "}
-          <span className="font-medium text-foreground">{endRow}</span> of{" "}
-          <span className="font-medium text-foreground">{totalRows}</span>{" "}
-          results
-        </div>
-
         {/* 페이지 크기 선택 */}
         <div className="flex items-center gap-2">
           <label
             htmlFor="rows-per-page"
             className="text-sm font-medium text-muted-foreground whitespace-nowrap"
           >
-            Rows per page:
+            페이지에서 보일 개수:
           </label>
           <Select
             value={`${pageSize}`}
@@ -89,7 +74,7 @@ function PaginationControls({ table }: PaginationControlsProps) {
       <div className="flex items-center justify-between gap-2 sm:justify-end">
         {/* 페이지 번호 표시 */}
         <div className="flex items-center justify-center min-w-[100px] text-sm font-medium text-muted-foreground mr-2">
-          Page <span className="mx-1 text-foreground">{pageIndex + 1}</span> of{" "}
+          페이지 <span className="mx-1 text-foreground">{pageIndex + 1}</span> /{" "}
           <span className="ml-1 text-foreground">{pageCount}</span>
         </div>
 
@@ -118,7 +103,7 @@ function PaginationControls({ table }: PaginationControlsProps) {
             aria-label="Go to previous page"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className="hidden md:inline">Previous</span>
+            <span className="hidden md:inline">이전</span>
           </Button>
 
           {/* 이전 페이지 (모바일) */}
@@ -142,7 +127,7 @@ function PaginationControls({ table }: PaginationControlsProps) {
             className="h-8 gap-1 transition-all disabled:opacity-50 hidden sm:flex"
             aria-label="Go to next page"
           >
-            <span className="hidden md:inline">Next</span>
+            <span className="hidden md:inline">다음</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
 
@@ -175,4 +160,3 @@ function PaginationControls({ table }: PaginationControlsProps) {
     </div>
   );
 }
-export default memo(PaginationControls);
