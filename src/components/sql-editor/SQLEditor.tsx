@@ -1,6 +1,6 @@
 "use client";
 
-import { memo, useCallback, useMemo, useState } from "react";
+import { memo, useCallback, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 import { useUIStore } from "@/store/ui-store";
 import { useTheme } from "next-themes";
