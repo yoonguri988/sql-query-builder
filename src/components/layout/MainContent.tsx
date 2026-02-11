@@ -42,6 +42,8 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
     <main
       className={`
         flex-1 overflow-auto
+        p-3 sm:p-4 md:p-6 lg:mr-0
+        transition-all duration-300
         ${isRightPanelOpen ? "hidden md:block" : "block"}
       `}
     >
@@ -82,7 +84,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 p-6">
+        <div className="flex-1 p-6 max-w-7xl space-y-4 sm:space-y-6">
           {/* Query Builder 탭 */}
           <TabsContent value="builder" className="p-4 md:p-6">
             <div className="max-w-4xl mx-auto space-y-6">
@@ -132,7 +134,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
                 queryResults.data.rowCount > 0 && (
                   <div className="space-y-4">
                     {/* 실행 정보 및 다운로드 버튼 */}
-                    <div className="flex items-start justify-between gap-4">
+                    <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
                       <div className="flex-1">
                         <ExecutionInfo metadata={queryResults.metadata} />
                       </div>

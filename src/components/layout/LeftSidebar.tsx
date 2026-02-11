@@ -27,12 +27,11 @@ function LeftSidebar({ isOpen = true, onClose }: LeftSidebarProps) {
   return (
     <aside
       className={`
-        fixed lg:static inset-y-0 left-0 z-40
-        w-full md:w-64 lg:w-[200px] xl:w-[300px]
-        bg-background border-r
-        transform transition-transform duration-200 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0
+        fixed lg:static inset-y-0 left-0 z-40 w-80
+        bg-background border-r
+        transform transition-transform duration-200 ease-in-out
         flex flex-col
         h-full
       `}

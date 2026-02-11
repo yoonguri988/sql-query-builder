@@ -98,12 +98,12 @@ function WhereClauseBuilder() {
         <div className="rounded-md border p-4 space-y-3 animate-in fade-in duration-200">
           {whereConditions.map((condition, index) => (
             <div
-              key={condition.id}
-              className="animate-slide-in"
+              key={index}
+              // className="animate-slide-in"
+              className="flex flex-col sm:flex-row gap-2 sm:gap-3 p-3 sm:p-4 border rounded-lg animate-slide-in"
               style={{ animationDelay: `${index * 50}ms` }}
             >
               <WhereConditionItem
-                key={condition.id}
                 condition={condition}
                 onUpdate={updateWhereCondition}
                 onRemove={removeWhereCondition}

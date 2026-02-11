@@ -80,7 +80,8 @@ function ColumnSelector() {
 
       {/* 컬럼 목록 */}
       {/* 컬럼 체크박스 목록 */}
-      <div className="rounded-md border p-4 space-y-3 max-h-[400px] overflow-y-auto">
+      {/* <div className="rounded-md border p-4 space-y-3 max-h-[400px] overflow-y-auto"> */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
         {columns.map((column) => (
           <ColumnSelectorItem
             key={column.name}

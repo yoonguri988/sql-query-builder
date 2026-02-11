@@ -5,10 +5,25 @@ import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightPanel from "@/components/layout/RightPanel";
 import MainContent from "@/components/layout/MainContent";
+import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 
 export default function MainLayout() {
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
+
+  // 스와이프 제스처
+  useSwipeGesture({
+    onSwipeRight: () => {
+      if (window.innerWidth < 1024) {
+        setShowLeftSidebar(true);
+      }
+    },
+    onSwipeLeft: () => {
+      if (window.innerWidth < 1024) {
+        setShowRightPanel(true);
+      }
+    },
+  });
 
   // useCallback으로 함수 메모이제이션
   const handleLeftSidebarToggle = useCallback(() => {

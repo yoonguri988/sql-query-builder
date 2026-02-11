@@ -143,7 +143,7 @@ function WhereConditionItem({
             onUpdate(condition.id, { operator: value as WhereOperator })
           }
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-32">
             <SelectValue placeholder="연산자" />
           </SelectTrigger>
           <SelectContent>
@@ -162,7 +162,7 @@ function WhereConditionItem({
             placeholder="값 입력"
             value={condition.value}
             onChange={(e) => onUpdate(condition.id, { value: e.target.value })}
-            className={`flex-1 ${!condition.value.toString().trim() && hasError ? "border-red-500" : ""}`}
+            className={`flex-1 ${!condition.value.toString().trim() && hasError ? "border-red-500" : ""} text-sm sm:text-base`}
           />
         )}
 
@@ -172,7 +172,7 @@ function WhereConditionItem({
           variant="ghost"
           size="icon"
           onClick={() => onRemove(condition.id)}
-          className="h-10 w-10 shrink-0 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950"
+          className="h-9 w-9 sm:h-10 sm:w-10 shrink-0 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950"
           title="조건 삭제"
         >
           <X className="h-4 w-4" />

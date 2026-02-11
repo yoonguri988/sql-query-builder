@@ -88,7 +88,7 @@ function ResultsTable({ data: rawData }: ResultsTableProps) {
       {/* 스크롤 가능한 테이블 컨테이너 */}
       <div className="flex-1 rounded-lg border border-border bg-card shadow-sm overflow-hidden">
         <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-420px)]">
-          <Table>
+          <Table className="min-w-[640px]">
             <TableHeader className="sticky top-0 z-10 bg-muted/95 backdrop-blur supports-[backdrop-filter]:bg-muted/60">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow
@@ -98,7 +98,7 @@ function ResultsTable({ data: rawData }: ResultsTableProps) {
                   {headerGroup.headers.map((header) => (
                     <TableHead
                       key={header.id}
-                      className="font-semibold text-foreground h-12 px-4 relative group"
+                      className="text-xs sm:text-sm whitespace-nowrap font-semibold text-foreground h-12 px-4 relative group"
                     >
                       {header.isPlaceholder ? null : (
                         <div
@@ -183,6 +183,7 @@ function ResultsTable({ data: rawData }: ResultsTableProps) {
                       <TableCell
                         key={cell.id}
                         className={cn(
+                          "text-xs sm:text-sm",
                           // 기본 패딩 및 크기
                           "px-4 py-3 text-sm",
                           // 부드러운 트랜지션

@@ -85,7 +85,7 @@ function QueryHistory() {
         )}
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 touch-pan-y">
         {history.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4">
             <History className="h-12 w-12 mb-2" />
