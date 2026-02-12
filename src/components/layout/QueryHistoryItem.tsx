@@ -19,8 +19,8 @@ interface Props {
 }
 
 function QueryHistoryItem({ item, onClick, onDelete }: Props) {
-  const { theme } = useTheme();
-  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
+  const { resolvedTheme } = useTheme();
+  const syntaxStyle = resolvedTheme === "dark" ? vscDarkPlus : vs;
   return (
     <div className="border rounded-lg p-3 space-y-2 hover:bg-accent/50 transition-colors">
       <div className="font-mono text-xs bg-muted p-2 rounded overflow-x-auto">

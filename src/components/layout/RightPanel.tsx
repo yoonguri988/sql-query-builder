@@ -11,17 +11,16 @@ function RightPanel({ isOpen, onClose }: RightPanelProps) {
     <aside
       className={`
         ${isOpen ? "block" : "hidden"}
-        md:${isOpen ? "block" : "hidden"}
-        lg:block
-        fixed lg:static inset-y-0 right-0 z-40
-        w-full md:w-72 lg:w-[300px] xl:w-[400px]
+        xl:block
+        fixed lg:static inset-y-0 right-0 z-0
+         w-full md:w-80 xl:w-96
         bg-background border-l
         flex flex-col
         overflow-hidden
       `}
     >
       {/* 모바일/태블릿 헤더 */}
-      <div className="lg:hidden flex items-center justify-between p-3 border-b bg-background shrink-0">
+      <div className="lg:hidden flex items-center justify-between p-3 border-b bg-background shrink-0 z-50">
         <h3 className="font-semibold">Results Panel</h3>
         <Button
           variant="ghost"

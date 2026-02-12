@@ -38,7 +38,7 @@ export default function PaginationControls({ table }: PaginationControlsProps) {
         <div className="flex items-center gap-2">
           <label
             htmlFor="rows-per-page"
-            className="text-sm font-medium text-muted-foreground whitespace-nowrap"
+            className="text-sm font-medium text-muted-foreground whitespace-nowrap ml-3"
           >
             페이지에서 보일 개수:
           </label>

@@ -29,8 +29,8 @@ function LineChart({ data, config }: LineChartProps) {
   return (
     <ResponsiveContainer
       width="100%"
-      height="100%"
-      className="min-h-[300px] h-[400px]"
+      height={320}
+      className="sm:h-[400px] md:h-[450px] lg:h-[500px]"
     >
       <RechartsLine
         data={data}

@@ -2,7 +2,6 @@
 
 import { memo, useCallback, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
-import { useUIStore } from "@/store/ui-store";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,10 +11,9 @@ import type { editor } from "monaco-editor";
 
 function SQLEditor() {
   const [sqlText, setSqlText] = useState("");
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
-  const { setActiveRightPanelTab } = useUIStore();
 
   const handleExecute = useCallback(async () => {
     if (!sqlText.trim()) return;
@@ -29,8 +27,7 @@ function SQLEditor() {
     await executeQuery();
 
     // Results 탭으로 이동
-    setActiveRightPanelTab("results");
-  }, [sqlText, executeQuery, setActiveRightPanelTab]);
+  }, [sqlText, executeQuery]);
 
   const handleReset = useCallback(() => {
     setSqlText("");
@@ -79,7 +76,6 @@ function SQLEditor() {
                   generatedSQL: currentValue.trim(),
                 });
                 useQueryStore.getState().executeQuery();
-                useUIStore.getState().setActiveRightPanelTab("results");
               }
             }, 0);
           }
@@ -116,7 +112,7 @@ function SQLEditor() {
               value={sqlText}
               onChange={handleEditorChange}
               onMount={handleEditorDidMount}
-              theme={theme === "dark" ? "vs-dark" : "vs"}
+              theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
               options={{
                 selectOnLineNumbers: true,
                 roundedSelection: false,

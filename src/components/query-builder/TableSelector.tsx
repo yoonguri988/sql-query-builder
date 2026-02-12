@@ -29,10 +29,10 @@ export default function TableSelector() {
   const tblNms = getTableNames();
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2 sm:space-y-3">
       <Label
         htmlFor="table-select"
-        className="flex items-center gap-2 text-sm font-medium"
+        className="flex items-center gap-2 text-sm font-medium sm:text-base"
       >
         <Database className="h-4 w-4" />
         FROM

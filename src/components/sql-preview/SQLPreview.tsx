@@ -43,10 +43,10 @@ function SQLPreview({ onExecute }: SQLPreviewProps) {
   // 복사 Hook 사용
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   const { toast } = useToast();
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
 
   // 다크모드에 따라 스타일 선택
-  const syntaxStyle = theme === "dark" ? vscDarkPlus : vs;
+  const syntaxStyle = resolvedTheme === "dark" ? vscDarkPlus : vs;
 
   // 복사 핸들러
   const handleCopy = async () => {

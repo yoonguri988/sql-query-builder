@@ -18,7 +18,6 @@ import {
 import { History, Trash2 } from "lucide-react";
 import { useQueryStore } from "@/store/query-store";
 import { useToast } from "@/hooks/use-toast";
-import { useUIStore } from "@/store/ui-store";
 import { memo } from "react";
 import QueryHistoryItem from "./QueryHistoryItem";
 
@@ -28,19 +27,12 @@ function QueryHistory() {
   const removeHistoryItem = useHistoryStore((state) => state.removeHistoryItem);
 
   const restoreFromHistory = useQueryStore((state) => state.restoreFromHistory);
-  const setActiveRightPanelTab = useUIStore(
-    (state) => state.setActiveRightPanelTab
-  );
-
   const { toast } = useToast();
 
   const handleRestore = (id: string) => {
     const item = useHistoryStore.getState().getHistoryById(id);
     if (item) {
       restoreFromHistory(item);
-
-      // SQL Preview 탭으로 이동
-      setActiveRightPanelTab("sql");
 
       toast({
         title: "쿼리 복원 완료",
@@ -85,7 +77,7 @@ function QueryHistory() {
         )}
       </div>
 
-      <ScrollArea className="flex-1">
+      <ScrollArea className="flex-1 touch-pan-y">
         {history.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-muted-foreground p-4">
             <History className="h-12 w-12 mb-2" />

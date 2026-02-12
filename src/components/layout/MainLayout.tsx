@@ -38,7 +38,7 @@ export default function MainLayout() {
         {/* Left Sidebar Overlay (모바일/태블릿) */}
         {showLeftSidebar && (
           <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-40 xl:hidden"
             onClick={() => setShowLeftSidebar(false)}
             aria-hidden="true"
           />
@@ -52,15 +52,6 @@ export default function MainLayout() {
           isOpen={showRightPanel}
           onClose={() => setShowRightPanel(false)}
         />
-
-        {/* Right Panel Overlay (모바일/태블릿) */}
-        {showRightPanel && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-            onClick={() => setShowRightPanel(false)}
-            aria-hidden="true"
-          />
-        )}
       </div>
     </div>
   );
