@@ -5,25 +5,10 @@ import Header from "@/components/layout/Header";
 import LeftSidebar from "@/components/layout/LeftSidebar";
 import RightPanel from "@/components/layout/RightPanel";
 import MainContent from "@/components/layout/MainContent";
-import { useSwipeGesture } from "@/hooks/useSwipeGesture";
 
 export default function MainLayout() {
   const [showLeftSidebar, setShowLeftSidebar] = useState(false);
   const [showRightPanel, setShowRightPanel] = useState(false);
-
-  // 스와이프 제스처
-  useSwipeGesture({
-    onSwipeRight: () => {
-      if (window.innerWidth < 1024) {
-        setShowLeftSidebar(true);
-      }
-    },
-    onSwipeLeft: () => {
-      if (window.innerWidth < 1024) {
-        setShowRightPanel(true);
-      }
-    },
-  });
 
   // useCallback으로 함수 메모이제이션
   const handleLeftSidebarToggle = useCallback(() => {
@@ -53,7 +38,7 @@ export default function MainLayout() {
         {/* Left Sidebar Overlay (모바일/태블릿) */}
         {showLeftSidebar && (
           <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            className="fixed inset-0 bg-black/50 z-40 xl:hidden"
             onClick={() => setShowLeftSidebar(false)}
             aria-hidden="true"
           />
@@ -67,15 +52,6 @@ export default function MainLayout() {
           isOpen={showRightPanel}
           onClose={() => setShowRightPanel(false)}
         />
-
-        {/* Right Panel Overlay (모바일/태블릿) */}
-        {showRightPanel && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-            onClick={() => setShowRightPanel(false)}
-            aria-hidden="true"
-          />
-        )}
       </div>
     </div>
   );

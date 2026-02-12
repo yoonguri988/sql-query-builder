@@ -2,7 +2,7 @@
 
 import { HeaderProps } from "@/types/layout";
 import { Button } from "../ui/button";
-import { Github, Menu } from "lucide-react";
+import { ClipboardList, Github, Menu } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
 import { memo } from "react";
 
@@ -14,7 +14,7 @@ function Header({ onLeftSidebarToggle, onRightPanelToggle }: HeaderProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="lg:hidden h-8 w-8 sm:h-10 sm:w-10"
+          className="xl:hidden h-8 w-8 sm:h-10 sm:w-10"
           onClick={onLeftSidebarToggle}
           aria-label="menu"
         >
@@ -34,11 +34,13 @@ function Header({ onLeftSidebarToggle, onRightPanelToggle }: HeaderProps) {
         <Button
           variant="outline"
           size="sm"
-          className="lg:hidden text-xs sm:text-sm px-2 sm:px-4"
+          className="xl:hidden text-xs sm:text-sm px-2 sm:px-4"
           onClick={onRightPanelToggle}
         >
-          <span className="hidden sm:inline">Results</span>
-          <span className="sm:hidden">📊</span>
+          <span className="hidden sm:inline">Preview</span>
+          <span className="sm:hidden">
+            <ClipboardList className="w-4 h-4" />
+          </span>
         </Button>
         <ThemeToggle />
 

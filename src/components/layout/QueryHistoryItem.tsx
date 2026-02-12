@@ -10,7 +10,7 @@ import {
   vs,
 } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Badge } from "../ui/badge";
-import { memo, useEffect } from "react";
+import { memo } from "react";
 
 interface Props {
   item: HistoryType;

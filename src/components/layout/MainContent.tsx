@@ -13,6 +13,13 @@ import { memo, useEffect, useState } from "react";
 import { useQueryStore } from "@/store/query-store";
 import ExecutionInfo from "../sql-preview/ExecutionInfo";
 import DownloadButton from "../results/DownloadButton";
+import {
+  Blocks,
+  ChartColumnIncreasing,
+  ClipboardList,
+  PencilLine,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 function MainContent({ isRightPanelOpen }: MainContentProps) {
   const [activeTab, setActiveTab] = useState<string>("builder");
@@ -42,7 +49,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
     <main
       className={`
         flex-1 overflow-auto
-        p-3 sm:p-4 md:p-6 lg:mr-0
+        p-1 sm:p-3 md:p-4 lg:mr-0
         transition-all duration-300
         ${isRightPanelOpen ? "hidden md:block" : "block"}
       `}
@@ -52,24 +59,36 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
         onValueChange={setActiveTab}
         className="flex-1 flex flex-col"
       >
-        <TabsList className="w-full justify-start border-b rounded-none h-12 bg-transparent p-0">
+        <TabsList className="w-full justify-center border-b rounded-none h-10 bg-transparent p-0">
           <TabsTrigger
             value="builder"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            className={cn(
+              "rounded-none border-b-2 border-transparent data-[state=active]:border-primary",
+              "sm:flex sm:gap-1 sm:justify-between sm:items-center"
+            )}
           >
-            📊 Query Builder
+            <Blocks className="w-4 h-4 inline sm:hidden" />
+            <span className="hidden sm:inline">Query Builder</span>
           </TabsTrigger>
           <TabsTrigger
             value="sqlEditor"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            className={cn(
+              "rounded-none border-b-2 border-transparent data-[state=active]:border-primary",
+              "sm:flex sm:gap-1 sm:justify-between sm:items-center"
+            )}
           >
-            📝 SQL Editor
+            <PencilLine className="w-4 h-4 inline sm:hidden" />
+            <span className="hidden sm:inline">SQL Editor</span>
           </TabsTrigger>
           <TabsTrigger
             value="results"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            className={cn(
+              "rounded-none border-b-2 border-transparent data-[state=active]:border-primary",
+              "sm:flex sm:gap-1 sm:justify-between sm:items-center"
+            )}
           >
-            📋 Results
+            <ClipboardList className="w-4 h-4 inline sm:hidden" />
+            <span className="hidden sm:inline">Results</span>
             {queryResult && queryResult.rowCount > 0 && (
               <span className="ml-2 text-xs text-muted-foreground">
                 ({queryResult.rowCount})
@@ -78,15 +97,19 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
           </TabsTrigger>
           <TabsTrigger
             value="visualization"
-            className="rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
+            className={cn(
+              "rounded-none border-b-2 border-transparent data-[state=active]:border-primary",
+              "sm:flex sm:gap-1 sm:justify-between sm:items-center"
+            )}
           >
-            📈 Visualization
+            <ChartColumnIncreasing className="w-4 h-4 inline sm:hidden" />
+            <span className="hidden sm:inline">Visualization</span>
           </TabsTrigger>
         </TabsList>
 
-        <div className="flex-1 p-6 max-w-7xl space-y-4 sm:space-y-6">
+        <div className="flex-1 p-2 max-w-7xl space-y-4 sm:space-y-6">
           {/* Query Builder 탭 */}
-          <TabsContent value="builder" className="p-4 md:p-6">
+          <TabsContent value="builder" className="p-1">
             <div className="max-w-4xl mx-auto space-y-6">
               <div className="text-muted-foreground">
                 <QueryBuilder />
@@ -95,7 +118,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
           </TabsContent>
 
           {/* SQL Editor 탭 */}
-          <TabsContent value="sqlEditor" className="p-4 md:p-6">
+          <TabsContent value="sqlEditor" className="p-1">
             <div className="max-w-4xl mx-auto space-y-6">
               <h2 className="text-2xl font-bold">SQL Editor</h2>
               <div className="text-muted-foreground">
@@ -105,7 +128,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
           </TabsContent>
 
           {/* Results 탭 */}
-          <TabsContent value="results" className="p-4 md:p-6">
+          <TabsContent value="results" className="p-1">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Query Results</h2>
 
@@ -149,7 +172,7 @@ function MainContent({ isRightPanelOpen }: MainContentProps) {
           </TabsContent>
 
           {/* Visualization 탭 */}
-          <TabsContent value="visualization" className="p-4 md:p-6">
+          <TabsContent value="visualization" className="p-1">
             <div className="space-y-6">
               <h2 className="text-2xl font-bold">Data Visualization</h2>
               <div className="text-muted-foreground">

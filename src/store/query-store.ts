@@ -456,16 +456,16 @@ export const useQueryStore = create<QueryStore>((set, get) => ({
     // 전체 쿼리 상태 복원
     const { queryState } = item;
     set({
-      selectedTable: queryState.selectedTable,
-      selectedColumns: queryState.selectedColumns,
-      whereConditions: queryState.whereConditions,
-      orderBy: queryState.orderBy,
-      limit: queryState.limit,
+      //   selectedTable: queryState.selectedTable,
+      //   selectedColumns: queryState.selectedColumns,
+      //   whereConditions: queryState.whereConditions,
+      //   orderBy: queryState.orderBy,
+      //   limit: queryState.limit,
       generatedSQL: queryState.generatedSQL,
-      error: null,
-      queryResult: null,
-      executionMetadata: null,
-      executionTime: null,
+      //   error: null,
+      //   queryResult: null,
+      //   executionMetadata: null,
+      //   executionTime: null,
     });
   },
 
