@@ -67,8 +67,9 @@ function ResetButtons() {
           <AlertDialogHeader>
             <AlertDialogTitle>쿼리 빌더 초기화</AlertDialogTitle>
             <AlertDialogDescription>
-              모든 설정과 결과가 초기화됩니다. 계속하시겠습니까?
+              모든 설정과 결과가 초기화됩니다.
             </AlertDialogDescription>
+            <AlertDialogDescription>계속하시겠습니까?</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>취소</AlertDialogCancel>
