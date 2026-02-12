@@ -12,7 +12,7 @@ import type { editor } from "monaco-editor";
 
 function SQLEditor() {
   const [sqlText, setSqlText] = useState("");
-  const { theme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const executeQuery = useQueryStore((state) => state.executeQuery);
   const generatedSQL = useQueryStore((state) => state.generatedSQL);
   const { setActiveRightPanelTab } = useUIStore();
@@ -116,7 +116,7 @@ function SQLEditor() {
               value={sqlText}
               onChange={handleEditorChange}
               onMount={handleEditorDidMount}
-              theme={theme === "dark" ? "vs-dark" : "vs"}
+              theme={resolvedTheme === "dark" ? "vs-dark" : "vs"}
               options={{
                 selectOnLineNumbers: true,
                 roundedSelection: false,
